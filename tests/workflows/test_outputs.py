@@ -13,7 +13,9 @@ class TestOutputs(unittest.TestCase):
         to simulate Kubernetes pod data. These mock objects are added to a list, which is used
         as test data in the unit tests.
         """
-        self.mock_pod1: MagicMock = MagicMock(spec=pods_inventory.PodsInventoried)
+        self.mock_pod1: MagicMock = MagicMock(
+            spec=pods_inventory.PodsInventoried
+        )
         self.mock_pod1.name = "test-pod-1"
         self.mock_pod1.namespace = "default"
         self.mock_pod1.repo = "owner/repo1"
@@ -23,7 +25,9 @@ class TestOutputs(unittest.TestCase):
         self.mock_pod1.latest_release_name = "v1.2.0"
         self.mock_pod1.versions_to_latest_release = 2
 
-        self.mock_pod2: MagicMock = MagicMock(spec=pods_inventory.PodsInventoried)
+        self.mock_pod2: MagicMock = MagicMock(
+            spec=pods_inventory.PodsInventoried
+        )
         self.mock_pod2.name = "test-pod-2"
         self.mock_pod2.namespace = "kube-system"
         self.mock_pod2.repo = "owner/repo2"
@@ -34,7 +38,6 @@ class TestOutputs(unittest.TestCase):
         self.mock_pod2.versions_to_latest_release = 0
 
         self.pods_list: list = [self.mock_pod1, self.mock_pod2]
-
 
     def test_json_with_multiple_pods(self) -> None:
         """
@@ -71,7 +74,6 @@ class TestOutputs(unittest.TestCase):
         self.assertEqual(pod2_dict["repo"], "owner/repo2")
         self.assertEqual(pod2_dict["versions_to_latest_release"], 0)
 
-
     def test_json_with_empty_list(self) -> None:
         """
         Tests the `json` function with an empty list.
@@ -87,7 +89,6 @@ class TestOutputs(unittest.TestCase):
 
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
-
 
     def test_json_with_single_pod(self) -> None:
         """
@@ -108,7 +109,6 @@ class TestOutputs(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["name"], "test-pod-1")
 
-
     def test_csv_with_multiple_pods(self) -> None:
         """
         Tests the `csv` function with multiple pods.
@@ -127,7 +127,7 @@ class TestOutputs(unittest.TestCase):
 
         self.assertIsInstance(result, str)
 
-        lines: list[str] = result.strip().split('\n')
+        lines: list[str] = result.strip().split("\n")
         self.assertEqual(len(lines), 3)  # Header + 2 data rows
 
         expected_header: str = "name,namespace,repo,current_release_date,current_release_name,latest_release_date,latest_release_name,versions_to_latest_release"
@@ -138,7 +138,6 @@ class TestOutputs(unittest.TestCase):
 
         expected_row2: str = "test-pod-2,kube-system,owner/repo2,2023-02-01,v2.0.0,2023-02-01,v2.0.0,0"
         self.assertEqual(lines[2], expected_row2)
-
 
     def test_csv_with_empty_list(self) -> None:
         """
@@ -155,12 +154,11 @@ class TestOutputs(unittest.TestCase):
         result: str = outputs.csv([])
 
         self.assertIsInstance(result, str)
-        lines: list[str] = result.strip().split('\n')
+        lines: list[str] = result.strip().split("\n")
         self.assertEqual(len(lines), 1)  # Only header
 
         expected_header: str = "name,namespace,repo,current_release_date,current_release_name,latest_release_date,latest_release_name,versions_to_latest_release"
         self.assertEqual(lines[0], expected_header)
-
 
     def test_csv_with_single_pod(self) -> None:
         """
@@ -178,12 +176,11 @@ class TestOutputs(unittest.TestCase):
         result: str = outputs.csv([self.mock_pod1])
 
         self.assertIsInstance(result, str)
-        lines: list[str] = result.strip().split('\n')
+        lines: list[str] = result.strip().split("\n")
         self.assertEqual(len(lines), 2)  # Header + 1 data row
 
         expected_row: str = "test-pod-1,default,owner/repo1,2023-01-01,v1.0.0,2023-01-15,v1.2.0,2"
         self.assertEqual(lines[1], expected_row)
-
 
     def test_csv_ends_with_newline(self) -> None:
         """
@@ -196,8 +193,7 @@ class TestOutputs(unittest.TestCase):
             - The result string ends with a newline character ('\n').
         """
         result: str = outputs.csv([self.mock_pod1])
-        self.assertTrue(result.endswith('\n'))
-
+        self.assertTrue(result.endswith("\n"))
 
     def test_json_dictionary_structure(self) -> None:
         """
@@ -214,13 +210,18 @@ class TestOutputs(unittest.TestCase):
 
         pod_dict: dict = result[0]
         expected_keys: set[str] = {
-            "name", "namespace", "repo", "current_release_date",
-            "current_release_name", "latest_release_date",
-            "latest_release_name", "versions_to_latest_release"
+            "name",
+            "namespace",
+            "repo",
+            "current_release_date",
+            "current_release_name",
+            "latest_release_date",
+            "latest_release_name",
+            "versions_to_latest_release",
         }
 
         self.assertEqual(set(pod_dict.keys()), expected_keys)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

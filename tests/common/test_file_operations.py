@@ -9,7 +9,12 @@ class TestContentToFile(unittest.TestCase):
     @patch("app.common.file_operations.Path")
     @patch("builtins.open", new_callable=mock_open)
     @patch("app.common.file_operations.logging")
-    def test_write_string_content(self, mock_logging, mock_file_open, mock_path) -> None:
+    def test_write_string_content(
+        self,
+        mock_logging: MagicMock,
+        mock_file_open: MagicMock,
+        mock_path: MagicMock,
+    ) -> None:
         """
         Test the `content_to_file` function with string content.
 
@@ -40,16 +45,22 @@ class TestContentToFile(unittest.TestCase):
         content_to_file(file_path, content)
 
         mock_path.assert_called_with(file_path)
-        mock_path.return_value.parent.mkdir.assert_called_once_with(parents=True, exist_ok=True)
+        mock_path.return_value.parent.mkdir.assert_called_once_with(
+            parents=True, exist_ok=True
+        )
         mock_file_open.assert_called_once_with(file_path, "w")
         mock_file_open().write.assert_called_once_with(content)
         mock_logging.info.assert_called_once()
 
-
     @patch("app.common.file_operations.Path")
     @patch("builtins.open", new_callable=mock_open)
     @patch("app.common.file_operations.logging")
-    def test_write_json_content(self, mock_logging, mock_file_open, mock_path) -> None:
+    def test_write_json_content(
+        self,
+        mock_logging: MagicMock,
+        mock_file_open: MagicMock,
+        mock_path: MagicMock,
+    ) -> None:
         """
         Test the `content_to_file` function with JSON content.
 
@@ -80,7 +91,9 @@ class TestContentToFile(unittest.TestCase):
         content_to_file(file_path, content)
 
         mock_path.assert_called_with(file_path)
-        mock_path.return_value.parent.mkdir.assert_called_once_with(parents=True, exist_ok=True)
+        mock_path.return_value.parent.mkdir.assert_called_once_with(
+            parents=True, exist_ok=True
+        )
         mock_file_open.assert_called_once_with(file_path, "w")
         self.assertTrue(mock_file_open().write.called)
         mock_logging.info.assert_called_once()

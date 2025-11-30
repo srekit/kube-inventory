@@ -3,8 +3,10 @@ import collections
 from collections import OrderedDict
 from typing import Any
 
+from kubernetes.client import V1PodList
 
-def list_json(pods) -> list[dict]:
+
+def list_json(pods: V1PodList) -> list[dict]:
     """
     Convert a list of Kubernetes pod objects into a JSON-serializable format.
 
@@ -21,6 +23,9 @@ def list_json(pods) -> list[dict]:
     """
     pods_json: list[dict] = []
     for pod in pods.items:
+        if pod.metadata is None or pod.spec is None:
+            continue
+
         p: OrderedDict[Any, Any] = collections.OrderedDict()
         p["name"] = pod.metadata.name
         p["namespace"] = pod.metadata.namespace

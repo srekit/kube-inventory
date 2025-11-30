@@ -1,0 +1,4 @@
+# Waiting for kubernetes-client to support urllib3 >=2.6.0
+# Tracked in: https://github.com/kubernetes-client/python/issues/XXXX
+CVE-2025-66418
+CVE-2025-66471

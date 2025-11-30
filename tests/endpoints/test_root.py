@@ -22,7 +22,6 @@ class TestRootEndpoint(unittest.TestCase):
         self.app_context: AppContext = self.app.app_context()
         self.app_context.push()
 
-
     def tearDown(self) -> None:
         """
         Tear down the test environment.
@@ -32,7 +31,6 @@ class TestRootEndpoint(unittest.TestCase):
         clean up the test environment.
         """
         self.app_context.pop()
-
 
     def test_root_endpoint_with_callable_provider(self) -> None:
         """
@@ -50,23 +48,22 @@ class TestRootEndpoint(unittest.TestCase):
         """
         mock_inventory_data: list[dict[str, int | str]] = [
             {"id": 1, "name": "item1"},
-            {"id": 2, "name": "item2"}
+            {"id": 2, "name": "item2"},
         ]
         mock_provider: MagicMock = MagicMock(return_value=mock_inventory_data)
 
-        self.app.config['INVENTORY_PROVIDER'] = mock_provider
+        self.app.config["INVENTORY_PROVIDER"] = mock_provider
 
         response: Response = root_endpoint()
 
         self.assertIsInstance(response, Response)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.content_type, "application/json")
 
         response_data: str = json.loads(response.get_data(as_text=True))
         self.assertEqual(response_data, mock_inventory_data)
 
         mock_provider.assert_called_once()
-
 
     def test_root_endpoint_with_non_callable_provider(self) -> None:
         """
@@ -75,17 +72,16 @@ class TestRootEndpoint(unittest.TestCase):
         This test verifies that when INVENTORY_PROVIDER is set to a non-callable value,
         the endpoint returns an empty JSON array.
         """
-        self.app.config['INVENTORY_PROVIDER'] = "not_callable"
+        self.app.config["INVENTORY_PROVIDER"] = "not_callable"
 
         response: Response = root_endpoint()
 
         self.assertIsInstance(response, Response)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.content_type, "application/json")
 
         response_data: str = json.loads(response.get_data(as_text=True))
         self.assertEqual(response_data, [])
-
 
     def test_root_endpoint_with_no_provider(self) -> None:
         """
@@ -94,17 +90,16 @@ class TestRootEndpoint(unittest.TestCase):
         This test verifies that when INVENTORY_PROVIDER is not set in the configuration,
         the endpoint returns an empty JSON array.
         """
-        self.app.config.pop('INVENTORY_PROVIDER', None)
+        self.app.config.pop("INVENTORY_PROVIDER", None)
 
         response: Response = root_endpoint()
 
         self.assertIsInstance(response, Response)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.content_type, "application/json")
 
         response_data: str = json.loads(response.get_data(as_text=True))
         self.assertEqual(response_data, [])
-
 
     def test_root_endpoint_with_none_provider(self) -> None:
         """
@@ -113,17 +108,17 @@ class TestRootEndpoint(unittest.TestCase):
         This test verifies that when INVENTORY_PROVIDER is set to None,
         the endpoint returns an empty JSON array.
         """
-        self.app.config['INVENTORY_PROVIDER'] = None
+        self.app.config["INVENTORY_PROVIDER"] = None
 
         response: Response = root_endpoint()
 
         self.assertIsInstance(response, Response)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.content_type, "application/json")
 
         response_data: str = json.loads(response.get_data(as_text=True))
         self.assertEqual(response_data, [])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

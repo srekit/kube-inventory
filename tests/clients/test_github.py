@@ -1,7 +1,7 @@
 import unittest
 import requests
 
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from app.clients.github import GithubClient
 
@@ -19,9 +19,12 @@ class TestGithubClient(unittest.TestCase):
         """
         self.api_url: str = "https://api.github.com"
         self.access_token: str = "test_token"
-        self.client_with_token: GithubClient = GithubClient(self.access_token, self.api_url)
-        self.client_without_token: GithubClient = GithubClient(None, self.api_url)
-
+        self.client_with_token: GithubClient = GithubClient(
+            self.access_token, self.api_url
+        )
+        self.client_without_token: GithubClient = GithubClient(
+            None, self.api_url
+        )
 
     def test_initializes_with_access_token(self) -> None:
         """
@@ -32,13 +35,12 @@ class TestGithubClient(unittest.TestCase):
             - The headers include the GitHub API version and the authorization token.
         """
         expected_headers: dict = {
-            'X-GitHub-Api-Version': '2022-11-28',
-            'Authorization': f"Bearer {self.access_token}"
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Authorization": f"Bearer {self.access_token}",
         }
 
         self.assertEqual(self.client_with_token.api_url, self.api_url)
         self.assertEqual(self.client_with_token.headers, expected_headers)
-
 
     def test_initializes_without_access_token(self) -> None:
         """
@@ -48,13 +50,10 @@ class TestGithubClient(unittest.TestCase):
             - The API URL is set correctly.
             - The headers include only the GitHub API version without an authorization token.
         """
-        expected_headers: dict = {
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
+        expected_headers: dict = {"X-GitHub-Api-Version": "2022-11-28"}
 
         self.assertEqual(self.client_without_token.api_url, self.api_url)
         self.assertEqual(self.client_without_token.headers, expected_headers)
-
 
     def test_fetches_latest_release_successfully(self) -> None:
         """
@@ -74,21 +73,20 @@ class TestGithubClient(unittest.TestCase):
         mock_response: dict = {
             "name": "v1.0.0",
             "tag_name": "v1.0.0",
-            "published_at": "2023-01-01T00:00:00Z"
+            "published_at": "2023-01-01T00:00:00Z",
         }
 
         with patch("requests.get") as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = mock_response
 
-            result: dict  = self.client_with_token.get_latest_release(repo_name)
+            result: dict = self.client_with_token.get_latest_release(repo_name)
 
             self.assertEqual(result, mock_response)
             mock_get.assert_called_once_with(
                 url=f"{self.api_url}/repos/{repo_name}/releases/latest",
-                headers=self.client_with_token.headers
+                headers=self.client_with_token.headers,
             )
-
 
     def test_returns_empty_dict_on_latest_release_non_200_status(self) -> None:
         """
@@ -112,14 +110,18 @@ class TestGithubClient(unittest.TestCase):
             with patch("logging.warning") as mock_log:
                 mock_get.return_value.status_code = 404
 
-                result: dict = self.client_with_token.get_latest_release(repo_name)
+                result: dict = self.client_with_token.get_latest_release(
+                    repo_name
+                )
 
                 self.assertEqual(result, {})
                 mock_log.assert_called_once_with(
-                    f"Unable to get latest release of repo {repo_name}, status code is 404")
+                    f"Unable to get latest release of repo {repo_name}, status code is 404"
+                )
 
-
-    def test_returns_empty_dict_on_latest_release_request_exception(self) -> None:
+    def test_returns_empty_dict_on_latest_release_request_exception(
+        self,
+    ) -> None:
         """
         Tests that the `get_latest_release` method returns an empty dictionary
         when a `RequestException` is raised during the API call.
@@ -137,13 +139,21 @@ class TestGithubClient(unittest.TestCase):
         """
         repo_name: str = "owner/repo"
 
-        with patch("requests.get", side_effect=requests.exceptions.RequestException("Connection error")) as mock_get:
+        with patch(
+            "requests.get",
+            side_effect=requests.exceptions.RequestException(
+                "Connection error"
+            ),
+        ):
             with patch("logging.error") as mock_log:
-                result: dict = self.client_with_token.get_latest_release(repo_name)
+                result: dict = self.client_with_token.get_latest_release(
+                    repo_name
+                )
 
                 self.assertEqual(result, {})
-                mock_log.assert_called_once_with(f"Unable to get latest release of repo {repo_name}: Connection error")
-
+                mock_log.assert_called_once_with(
+                    f"Unable to get latest release of repo {repo_name}: Connection error"
+                )
 
     def test_fetches_release_by_tag_name_successfully(self) -> None:
         """
@@ -165,21 +175,22 @@ class TestGithubClient(unittest.TestCase):
         mock_response: dict = {
             "name": "v1.0.0",
             "tag_name": "v1.0.0",
-            "published_at": "2023-01-01T00:00:00Z"
+            "published_at": "2023-01-01T00:00:00Z",
         }
 
         with patch("requests.get") as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = mock_response
 
-            result: dict = self.client_with_token.get_release_by_tag_name(repo_name, tag_name)
+            result: dict = self.client_with_token.get_release_by_tag_name(
+                repo_name, tag_name
+            )
 
             self.assertEqual(result, mock_response)
             mock_get.assert_called_once_with(
                 url=f"{self.api_url}/repos/{repo_name}/releases/tags/{tag_name}",
-                headers=self.client_with_token.headers
+                headers=self.client_with_token.headers,
             )
-
 
     def test_returns_empty_dict_on_release_by_tag_non_200_status(self) -> None:
         """
@@ -204,12 +215,14 @@ class TestGithubClient(unittest.TestCase):
             with patch("logging.warning") as mock_log:
                 mock_get.return_value.status_code = 404
 
-                result: dict = self.client_with_token.get_release_by_tag_name(repo_name, tag_name)
+                result: dict = self.client_with_token.get_release_by_tag_name(
+                    repo_name, tag_name
+                )
 
                 self.assertEqual(result, {})
                 mock_log.assert_called_once_with(
-                    f"Unable to get release by tag {tag_name} of repo {repo_name}, status code is 404")
-
+                    f"Unable to get release by tag {tag_name} of repo {repo_name}, status code is 404"
+                )
 
     def test_fetches_tag_release_date_successfully(self) -> None:
         """
@@ -235,10 +248,11 @@ class TestGithubClient(unittest.TestCase):
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = mock_response
 
-            result: str = self.client_with_token.get_tag_release_date(repo_name, release_name)
+            result: str = self.client_with_token.get_tag_release_date(
+                repo_name, release_name
+            )
 
             self.assertEqual(result, expected_date)
-
 
     def test_returns_empty_string_on_tag_release_date_error(self) -> None:
         """
@@ -260,10 +274,12 @@ class TestGithubClient(unittest.TestCase):
         release_name: str = "v1.0.0"
 
         with patch("requests.get") as mock_get:
-            with patch("logging.warning") as mock_log:
+            with patch("logging.warning"):
                 mock_get.return_value.status_code = 404
 
-                result: str = self.client_with_token.get_tag_release_date(repo_name, release_name)
+                result: str = self.client_with_token.get_tag_release_date(
+                    repo_name, release_name
+                )
 
                 self.assertEqual(result, "")
 
@@ -284,21 +300,34 @@ class TestGithubClient(unittest.TestCase):
         """
         repo_name: str = "owner/repo"
         mock_response: list[dict] = [
-            {"name": "v1.0.0", "prerelease": False, "published_at": "2023-01-01T00:00:00Z"},
-            {"name": "v1.0.0-beta", "prerelease": True, "published_at": "2022-12-01T00:00:00Z"}
+            {
+                "name": "v1.0.0",
+                "prerelease": False,
+                "published_at": "2023-01-01T00:00:00Z",
+            },
+            {
+                "name": "v1.0.0-beta",
+                "prerelease": True,
+                "published_at": "2022-12-01T00:00:00Z",
+            },
         ]
         expected_result: list[dict] = [
-            {"name": "v1.0.0", "prerelease": False, "published_at": "2023-01-01T00:00:00Z"}
+            {
+                "name": "v1.0.0",
+                "prerelease": False,
+                "published_at": "2023-01-01T00:00:00Z",
+            }
         ]
 
         with patch("requests.get") as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = mock_response
 
-            result: list = self.client_with_token.list_releases(repo_name)
+            result: list | None = self.client_with_token.list_releases(
+                repo_name
+            )
 
             self.assertEqual(result, expected_result)
-
 
     def test_lists_releases_successfully_including_prereleases(self) -> None:
         """
@@ -317,18 +346,29 @@ class TestGithubClient(unittest.TestCase):
         """
         repo_name: str = "owner/repo"
         mock_response: list[dict] = [
-            {"name": "v1.0.0", "prerelease": False, "published_at": "2023-01-01T00:00:00Z"},
-            {"name": "v1.0.0-beta", "prerelease": True, "published_at": "2022-12-01T00:00:00Z"}
+            {
+                "name": "v1.0.0",
+                "prerelease": False,
+                "published_at": "2023-01-01T00:00:00Z",
+            },
+            {
+                "name": "v1.0.0-beta",
+                "prerelease": True,
+                "published_at": "2022-12-01T00:00:00Z",
+            },
         ]
 
         with patch("requests.get") as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = mock_response
 
-            result: list = self.client_with_token.list_releases(repo_name, include_prerelease=True)
+            result: list | None = self.client_with_token.list_releases(
+                repo_name, include_prerelease=True
+            )
 
+            self.assertIsNotNone(result)
+            assert result is not None
             self.assertEqual(len(result), 2)
-
 
     def test_returns_empty_list_on_list_releases_exception(self) -> None:
         """
@@ -348,13 +388,19 @@ class TestGithubClient(unittest.TestCase):
         """
         repo_name: str = "owner/repo"
 
-        with patch("requests.get", side_effect=requests.exceptions.RequestException("Error")) as mock_get:
+        with patch(
+            "requests.get",
+            side_effect=requests.exceptions.RequestException("Error"),
+        ):
             with patch("logging.error") as mock_log:
-                result: list = self.client_with_token.list_releases(repo_name)
+                result: list | None = self.client_with_token.list_releases(
+                    repo_name
+                )
 
                 self.assertEqual(result, [])
-                mock_log.assert_called_once_with(f'Unable to list releases of repo {repo_name}, error is: Error')
-
+                mock_log.assert_called_once_with(
+                    f"Unable to list releases of repo {repo_name}, error is: Error"
+                )
 
     def test_lists_tags_successfully(self) -> None:
         """
@@ -371,10 +417,7 @@ class TestGithubClient(unittest.TestCase):
             - `requests.get` to simulate the API response.
         """
         repo_name: str = "owner/repo"
-        mock_response: list[dict] = [
-            {"name": "v1.0.0"},
-            {"name": "v0.9.0"}
-        ]
+        mock_response: list[dict] = [{"name": "v1.0.0"}, {"name": "v0.9.0"}]
         expected_result: list = ["v1.0.0", "v0.9.0"]
 
         with patch("requests.get") as mock_get:
@@ -384,7 +427,6 @@ class TestGithubClient(unittest.TestCase):
             result: list = self.client_with_token.list_tags(repo_name)
 
             self.assertEqual(result, expected_result)
-
 
     def test_returns_empty_list_on_list_tags_non_200_status(self) -> None:
         """
@@ -411,8 +453,9 @@ class TestGithubClient(unittest.TestCase):
                 result: list = self.client_with_token.list_tags(repo_name)
 
                 self.assertEqual(result, [])
-                mock_log.assert_called_once_with(f"Unable to list tags of repo {repo_name}, status code is: 404")
-
+                mock_log.assert_called_once_with(
+                    f"Unable to list tags of repo {repo_name}, status code is: 404"
+                )
 
     def test_returns_empty_list_on_list_tags_exception(self) -> None:
         """
@@ -432,13 +475,18 @@ class TestGithubClient(unittest.TestCase):
         """
         repo_name: str = "owner/repo"
 
-        with patch("requests.get", side_effect=requests.exceptions.RequestException("Error")) as mock_get:
+        with patch(
+            "requests.get",
+            side_effect=requests.exceptions.RequestException("Error"),
+        ):
             with patch("logging.error") as mock_log:
                 result: list = self.client_with_token.list_tags(repo_name)
 
                 self.assertEqual(result, [])
-                mock_log.assert_called_once_with(f'Unable to list tags of repo {repo_name}, error is: Error')
+                mock_log.assert_called_once_with(
+                    f"Unable to list tags of repo {repo_name}, error is: Error"
+                )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

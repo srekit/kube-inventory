@@ -7,9 +7,11 @@ from app.endpoints.metrics import metrics_endpoint
 
 
 class TestMetricsEndpoint(unittest.TestCase):
-    @patch('app.endpoints.metrics.generate_latest')
-    @patch('app.endpoints.metrics.get_registry')
-    def test_metrics_endpoint_success(self, mock_get_registry: MagicMock, mock_generate_latest: MagicMock) -> None:
+    @patch("app.endpoints.metrics.generate_latest")
+    @patch("app.endpoints.metrics.get_registry")
+    def test_metrics_endpoint_success(
+        self, mock_get_registry: MagicMock, mock_generate_latest: MagicMock
+    ) -> None:
         """
         Test that metrics_endpoint returns correct data, status code, and headers.
 
@@ -23,7 +25,9 @@ class TestMetricsEndpoint(unittest.TestCase):
         """
         mock_registry: MagicMock = MagicMock(spec=CollectorRegistry)
         mock_get_registry.return_value = mock_registry
-        mock_metrics_data: bytes = b"# HELP test_metric A test metric\ntest_metric 1.0\n"
+        mock_metrics_data: bytes = (
+            b"# HELP test_metric A test metric\ntest_metric 1.0\n"
+        )
         mock_generate_latest.return_value = mock_metrics_data
 
         data, status_code, headers = metrics_endpoint()
@@ -35,10 +39,11 @@ class TestMetricsEndpoint(unittest.TestCase):
         mock_get_registry.assert_called_once()
         mock_generate_latest.assert_called_once_with(mock_registry)
 
-
-    @patch('app.endpoints.metrics.generate_latest')
-    @patch('app.endpoints.metrics.get_registry')
-    def test_metrics_endpoint_empty_data(self, mock_get_registry: MagicMock, mock_generate_latest: MagicMock) -> None:
+    @patch("app.endpoints.metrics.generate_latest")
+    @patch("app.endpoints.metrics.get_registry")
+    def test_metrics_endpoint_empty_data(
+        self, mock_get_registry: MagicMock, mock_generate_latest: MagicMock
+    ) -> None:
         """
         Test metrics_endpoint with empty metrics data.
 
@@ -63,5 +68,5 @@ class TestMetricsEndpoint(unittest.TestCase):
         mock_generate_latest.assert_called_once_with(mock_registry)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

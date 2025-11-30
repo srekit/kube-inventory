@@ -7,9 +7,7 @@ import collections
 
 class GithubClient:
     def __init__(
-            self,
-            github_access_token: Optional[str],
-            github_api_url: str
+        self, github_access_token: Optional[str], github_api_url: str
     ) -> None:
         """
         Initializes the GithubClient instance.
@@ -23,19 +21,13 @@ class GithubClient:
 
         if github_access_token:
             self.headers = {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'Authorization': f"Bearer {github_access_token}"
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Authorization": f"Bearer {github_access_token}",
             }
         else:
-            self.headers = {
-                'X-GitHub-Api-Version': '2022-11-28'
-            }
+            self.headers = {"X-GitHub-Api-Version": "2022-11-28"}
 
-
-    def get_latest_release(
-            self,
-            repo_name: str
-    ) -> dict:
+    def get_latest_release(self, repo_name: str) -> dict[Any, Any]:
         """
         Fetches the latest release of a given GitHub repository.
 
@@ -53,26 +45,25 @@ class GithubClient:
         API Reference:
             https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-the-latest-release
         """
-        url = f'{self.api_url}/repos/{repo_name}/releases/latest'
+        url = f"{self.api_url}/repos/{repo_name}/releases/latest"
 
         try:
             response = requests.get(url=url, headers=self.headers)
             if response.status_code == 200:
-                response_data = response.json()
+                response_data: dict[Any, Any] = response.json()
                 return response_data
             else:
-                logging.warning(f"Unable to get latest release of repo {repo_name}, status code is {response.status_code}")
+                logging.warning(
+                    f"Unable to get latest release of repo {repo_name}, status code is {response.status_code}"
+                )
                 return {}
         except requests.exceptions.RequestException as e:
-            logging.error(f"Unable to get latest release of repo {repo_name}: {e}")
+            logging.error(
+                f"Unable to get latest release of repo {repo_name}: {e}"
+            )
             return {}
 
-
-    def get_release_by_tag_name(
-            self,
-            repo_name: str,
-            tag_name: str
-    ) -> dict:
+    def get_release_by_tag_name(self, repo_name: str, tag_name: str) -> dict:
         """
         Fetches a release from a GitHub repository by its tag name.
 
@@ -91,26 +82,27 @@ class GithubClient:
         API Reference:
             https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-a-release-by-tag-name
         """
-        url: str = f'{self.api_url}/repos/{repo_name}/releases/tags/{tag_name}'
+        url: str = f"{self.api_url}/repos/{repo_name}/releases/tags/{tag_name}"
 
         try:
-            response: requests.Response = requests.get(url=url, headers=self.headers)
+            response: requests.Response = requests.get(
+                url=url, headers=self.headers
+            )
             if response.status_code == 200:
-                response_data = response.json()
+                response_data: dict[Any, Any] = response.json()
                 return response_data
             else:
-                logging.warning(f"Unable to get release by tag {tag_name} of repo {repo_name}, status code is {response.status_code}")
+                logging.warning(
+                    f"Unable to get release by tag {tag_name} of repo {repo_name}, status code is {response.status_code}"
+                )
                 return {}
         except requests.exceptions.RequestException as e:
-            logging.error(f"Unable to get release by tag {tag_name} of repo {repo_name}: {e}")
+            logging.error(
+                f"Unable to get release by tag {tag_name} of repo {repo_name}: {e}"
+            )
             return {}
 
-
-    def get_tag_release_date(
-            self,
-            repo_name: str,
-            release_name: str
-    ) -> str:
+    def get_tag_release_date(self, repo_name: str, release_name: str) -> str:
         """
         Fetches the release date of a specific tag from a GitHub repository.
 
@@ -129,27 +121,31 @@ class GithubClient:
         API Reference:
             https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-a-release-by-tag-name
         """
-        url: str = f'{self.api_url}/repos/{repo_name}/releases/tags/{release_name}'
+        url: str = (
+            f"{self.api_url}/repos/{repo_name}/releases/tags/{release_name}"
+        )
 
         try:
-            response: requests.Response = requests.get(url=url, headers=self.headers)
+            response: requests.Response = requests.get(
+                url=url, headers=self.headers
+            )
             if response.status_code == 200:
-                response_data = response.json()
-                release_date = response_data["published_at"]
+                response_data: dict[Any, Any] = response.json()
+                release_date: str = response_data["published_at"]
                 return release_date
             else:
-                logging.warning(f"Unable to get published date of release {release_name} of repo {repo_name}, status code is: {response.status_code}")
+                logging.warning(
+                    f"Unable to get published date of release {release_name} of repo {repo_name}, status code is: {response.status_code}"
+                )
                 return ""
         except requests.exceptions.RequestException as e:
-            logging.error(f'Unable to list tags of repo {repo_name}, error is: {e}')
+            logging.error(
+                f"Unable to list tags of repo {repo_name}, error is: {e}"
+            )
             return ""
 
-
     def list_releases(
-            self,
-            repo_name: str,
-            include_prerelease: bool = False
-
+        self, repo_name: str, include_prerelease: bool = False
     ) -> list[Any] | None:
         """
         Fetches a list of releases from a GitHub repository.
@@ -171,35 +167,45 @@ class GithubClient:
         API Reference:
             https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#list-releases
         """
-        url: str = f'{self.api_url}/repos/{repo_name}/releases'
+        url: str = f"{self.api_url}/repos/{repo_name}/releases"
 
         try:
-            response: requests.Response = requests.get(url=url, headers=self.headers)
+            response: requests.Response = requests.get(
+                url=url, headers=self.headers
+            )
             if response.status_code == 200:
                 response_data: dict = response.json()
                 releases_dict: list[dict] = []
                 for release in response_data:
                     if not include_prerelease and release["prerelease"]:
-                        logging.debug(f"Skipping prerelease {release['name']} in repo {repo_name}")
+                        logging.debug(
+                            f"Skipping prerelease {release['name']} in repo {repo_name}"
+                        )
                         continue
 
-                    r: collections.OrderedDict[Any, Any] = collections.OrderedDict()
+                    r: collections.OrderedDict[
+                        Any, Any
+                    ] = collections.OrderedDict()
                     r["name"] = release["name"]
                     r["prerelease"] = release["prerelease"]
                     r["published_at"] = release["published_at"]
                     releases_dict.append(r)
-                    logging.debug(f"Found release {release['name']} in repo {repo_name}, prerelease: {release['prerelease']}, published at: {release['published_at']}")
-
+                    logging.debug(
+                        f"Found release {release['name']} in repo {repo_name}, prerelease: {release['prerelease']}, published at: {release['published_at']}"
+                    )
                 return releases_dict
+            else:
+                logging.warning(
+                    f"Unable to list releases of repo {repo_name}, status code is: {response.status_code}"
+                )
+                return []
         except requests.exceptions.RequestException as e:
-            logging.error(f'Unable to list releases of repo {repo_name}, error is: {e}')
+            logging.error(
+                f"Unable to list releases of repo {repo_name}, error is: {e}"
+            )
             return []
 
-
-    def list_tags(
-            self,
-            repo_name: str
-    ) -> list:
+    def list_tags(self, repo_name: str) -> list:
         """
         Fetches a list of tags from a GitHub repository.
 
@@ -217,10 +223,12 @@ class GithubClient:
         API Reference:
             https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-tags
         """
-        url: str = f'{self.api_url}/repos/{repo_name}/tags'
+        url: str = f"{self.api_url}/repos/{repo_name}/tags"
 
         try:
-            response: requests.Response = requests.get(url=url, headers=self.headers)
+            response: requests.Response = requests.get(
+                url=url, headers=self.headers
+            )
             if response.status_code == 200:
                 response_data: dict = response.json()
                 tags_dict: list[dict] = []
@@ -228,8 +236,12 @@ class GithubClient:
                     tags_dict.append(tag["name"])
                 return tags_dict
             else:
-                logging.warning(f"Unable to list tags of repo {repo_name}, status code is: {response.status_code}")
+                logging.warning(
+                    f"Unable to list tags of repo {repo_name}, status code is: {response.status_code}"
+                )
                 return []
         except requests.exceptions.RequestException as e:
-            logging.error(f'Unable to list tags of repo {repo_name}, error is: {e}')
+            logging.error(
+                f"Unable to list tags of repo {repo_name}, error is: {e}"
+            )
             return []

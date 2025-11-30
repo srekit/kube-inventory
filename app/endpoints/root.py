@@ -1,4 +1,7 @@
+from typing import Any
+
 from flask import jsonify, current_app, Response
+
 
 def root_endpoint() -> Response:
     """
@@ -13,7 +16,9 @@ def root_endpoint() -> Response:
     Returns:
         Response: A Flask JSON response containing the inventory data or an empty array.
     """
-    inventory_provider: str = current_app.config.get('INVENTORY_PROVIDER')
+    inventory_provider: Any | None = current_app.config.get(
+        "INVENTORY_PROVIDER"
+    )
     if inventory_provider and callable(inventory_provider):
         return jsonify(inventory_provider())
     return jsonify([])

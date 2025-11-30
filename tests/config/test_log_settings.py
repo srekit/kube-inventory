@@ -8,9 +8,11 @@ from app.config.log_settings import setup_logging
 
 
 class TestLogSettings(unittest.TestCase):
-    @patch('app.config.log_settings.logging.basicConfig')
-    @patch('app.config.log_settings.logging.log')
-    def test_setup_logging_valid_level(self, mock_logging_log, mock_basic_config) -> None:
+    @patch("app.config.log_settings.logging.basicConfig")
+    @patch("app.config.log_settings.logging.log")
+    def test_setup_logging_valid_level(
+        self, mock_logging_log: MagicMock, mock_basic_config: MagicMock
+    ) -> None:
         """
         Test the `setup_logging` function with a valid log level string.
 
@@ -35,14 +37,17 @@ class TestLogSettings(unittest.TestCase):
             stream=sys.stdout,
             level=logging.DEBUG,
             format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-            datefmt='%Y-%m-%dT%H:%M:%S'
+            datefmt="%Y-%m-%dT%H:%M:%S",
         )
-        mock_logging_log.assert_called_once_with(logging.INFO, "Log level set to %s", "DEBUG")
+        mock_logging_log.assert_called_once_with(
+            logging.INFO, "Log level set to %s", "DEBUG"
+        )
 
-
-    @patch('app.config.log_settings.logging.basicConfig')
-    @patch('app.config.log_settings.logging.log')
-    def test_setup_logging_info_level(self, mock_logging_log, mock_basic_config) -> None:
+    @patch("app.config.log_settings.logging.basicConfig")
+    @patch("app.config.log_settings.logging.log")
+    def test_setup_logging_info_level(
+        self, mock_logging_log: MagicMock, mock_basic_config: MagicMock
+    ) -> None:
         """
         Test the `setup_logging` function with the INFO log level.
 
@@ -66,14 +71,17 @@ class TestLogSettings(unittest.TestCase):
             stream=sys.stdout,
             level=logging.INFO,
             format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-            datefmt='%Y-%m-%dT%H:%M:%S'
+            datefmt="%Y-%m-%dT%H:%M:%S",
         )
-        mock_logging_log.assert_called_once_with(logging.INFO, "Log level set to %s", "INFO")
+        mock_logging_log.assert_called_once_with(
+            logging.INFO, "Log level set to %s", "INFO"
+        )
 
-
-    @patch('app.config.log_settings.logging.basicConfig')
-    @patch('app.config.log_settings.logging.log')
-    def test_setup_logging_warning_level(self, mock_logging_log, mock_basic_config) -> None:
+    @patch("app.config.log_settings.logging.basicConfig")
+    @patch("app.config.log_settings.logging.log")
+    def test_setup_logging_warning_level(
+        self, mock_logging_log: MagicMock, mock_basic_config: MagicMock
+    ) -> None:
         """
         Test the `setup_logging` function with the WARNING log level.
 
@@ -97,14 +105,17 @@ class TestLogSettings(unittest.TestCase):
             stream=sys.stdout,
             level=logging.WARNING,
             format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-            datefmt='%Y-%m-%dT%H:%M:%S'
+            datefmt="%Y-%m-%dT%H:%M:%S",
         )
-        mock_logging_log.assert_called_once_with(logging.INFO, "Log level set to %s", "WARNING")
+        mock_logging_log.assert_called_once_with(
+            logging.INFO, "Log level set to %s", "WARNING"
+        )
 
-
-    @patch('app.config.log_settings.logging.basicConfig')
-    @patch('app.config.log_settings.logging.log')
-    def test_setup_logging_invalid_level_defaults_to_info(self, mock_logging_log, mock_basic_config) -> None:
+    @patch("app.config.log_settings.logging.basicConfig")
+    @patch("app.config.log_settings.logging.log")
+    def test_setup_logging_invalid_level_defaults_to_info(
+        self, mock_logging_log: MagicMock, mock_basic_config: MagicMock
+    ) -> None:
         """
         Test the `setup_logging` function with an invalid log level string.
 
@@ -128,14 +139,17 @@ class TestLogSettings(unittest.TestCase):
             stream=sys.stdout,
             level=logging.INFO,
             format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-            datefmt='%Y-%m-%dT%H:%M:%S'
+            datefmt="%Y-%m-%dT%H:%M:%S",
         )
-        mock_logging_log.assert_called_once_with(logging.INFO, "Log level set to %s", "INVALID_LEVEL")
+        mock_logging_log.assert_called_once_with(
+            logging.INFO, "Log level set to %s", "INVALID_LEVEL"
+        )
 
-
-    @patch('app.config.log_settings.logging.basicConfig')
-    @patch('app.config.log_settings.logging.log')
-    def test_setup_logging_empty_string_defaults_to_info(self, mock_logging_log, mock_basic_config) -> None:
+    @patch("app.config.log_settings.logging.basicConfig")
+    @patch("app.config.log_settings.logging.log")
+    def test_setup_logging_empty_string_defaults_to_info(
+        self, mock_logging_log: MagicMock, mock_basic_config: MagicMock
+    ) -> None:
         """
         Test the `setup_logging` function with an empty string as the log level.
 
@@ -159,10 +173,12 @@ class TestLogSettings(unittest.TestCase):
             stream=sys.stdout,
             level=logging.INFO,
             format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-            datefmt='%Y-%m-%dT%H:%M:%S'
+            datefmt="%Y-%m-%dT%H:%M:%S",
         )
-        mock_logging_log.assert_called_once_with(logging.INFO, "Log level set to %s", "")
+        mock_logging_log.assert_called_once_with(
+            logging.INFO, "Log level set to %s", ""
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

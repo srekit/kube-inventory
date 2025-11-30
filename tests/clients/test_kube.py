@@ -7,10 +7,15 @@ from app.clients.kube import KubernetesClient
 
 
 class TestKubernetesClient(unittest.TestCase):
-    @patch('app.clients.kube.client.CoreV1Api')
-    @patch('app.clients.kube.config.load_kube_config')
-    @patch('app.clients.kube.logging.debug')
-    def test_init_with_kubeconfig_path(self, mock_debug, mock_load_kube_config, mock_core_v1_api) -> None:
+    @patch("app.clients.kube.client.CoreV1Api")
+    @patch("app.clients.kube.load_kube_config")
+    @patch("app.clients.kube.logging.debug")
+    def test_init_with_kubeconfig_path(
+        self,
+        mock_debug: MagicMock,
+        mock_load_kube_config: MagicMock,
+        mock_core_v1_api: MagicMock,
+    ) -> None:
         """
         Test the initialization of the KubernetesClient with a specified kubeconfig path.
 
@@ -26,18 +31,26 @@ class TestKubernetesClient(unittest.TestCase):
         mock_api_instance: MagicMock = MagicMock()
         mock_core_v1_api.return_value = mock_api_instance
 
-        client: KubernetesClient = KubernetesClient(kube_config_path=kube_config_path)
+        client: KubernetesClient = KubernetesClient(
+            kube_config_path=kube_config_path
+        )
 
         mock_load_kube_config.assert_called_once_with(kube_config_path)
-        mock_debug.assert_called_once_with(f"Loading Kubernetes config from kubeconfig file: {kube_config_path}")
+        mock_debug.assert_called_once_with(
+            f"Loading Kubernetes config from kubeconfig file: {kube_config_path}"
+        )
         mock_core_v1_api.assert_called_once()
         self.assertEqual(client.k8s_api, mock_api_instance)
 
-
-    @patch('app.clients.kube.client.CoreV1Api')
-    @patch('app.clients.kube.config.load_incluster_config')
-    @patch('app.clients.kube.logging.debug')
-    def test_init_without_kubeconfig_path(self, mock_debug, mock_load_incluster_config, mock_core_v1_api) -> None:
+    @patch("app.clients.kube.client.CoreV1Api")
+    @patch("app.clients.kube.load_incluster_config")
+    @patch("app.clients.kube.logging.debug")
+    def test_init_without_kubeconfig_path(
+        self,
+        mock_debug: MagicMock,
+        mock_load_incluster_config: MagicMock,
+        mock_core_v1_api: MagicMock,
+    ) -> None:
         """
         Test the initialization of the KubernetesClient without specifying a kubeconfig path.
 
@@ -55,15 +68,21 @@ class TestKubernetesClient(unittest.TestCase):
         client: KubernetesClient = KubernetesClient()
 
         mock_load_incluster_config.assert_called_once()
-        mock_debug.assert_called_once_with("Loading Kubernetes config from in-cluster configuration")
+        mock_debug.assert_called_once_with(
+            "Loading Kubernetes config from in-cluster configuration"
+        )
         mock_core_v1_api.assert_called_once()
         self.assertEqual(client.k8s_api, mock_api_instance)
 
-
-    @patch('app.clients.kube.client.CoreV1Api')
-    @patch('app.clients.kube.config.load_incluster_config')
-    @patch('app.clients.kube.logging.debug')
-    def test_init_with_none_kubeconfig_path(self, mock_debug, mock_load_incluster_config, mock_core_v1_api) -> None:
+    @patch("app.clients.kube.client.CoreV1Api")
+    @patch("app.clients.kube.load_incluster_config")
+    @patch("app.clients.kube.logging.debug")
+    def test_init_with_none_kubeconfig_path(
+        self,
+        mock_debug: MagicMock,
+        mock_load_incluster_config: MagicMock,
+        mock_core_v1_api: MagicMock,
+    ) -> None:
         """
         Test the initialization of the KubernetesClient with None as the kubeconfig path.
 
@@ -82,14 +101,17 @@ class TestKubernetesClient(unittest.TestCase):
         client: KubernetesClient = KubernetesClient(kube_config_path=None)
 
         mock_load_incluster_config.assert_called_once()
-        mock_debug.assert_called_once_with("Loading Kubernetes config from in-cluster configuration")
+        mock_debug.assert_called_once_with(
+            "Loading Kubernetes config from in-cluster configuration"
+        )
         mock_core_v1_api.assert_called_once()
         self.assertEqual(client.k8s_api, mock_api_instance)
 
-
-    @patch('app.clients.kube.client.CoreV1Api')
-    @patch('app.clients.kube.config.load_incluster_config')
-    def test_list_pods(self, mock_load_incluster_config, mock_core_v1_api) -> None:
+    @patch("app.clients.kube.client.CoreV1Api")
+    @patch("app.clients.kube.load_incluster_config")
+    def test_list_pods(
+        self, mock_load_incluster_config: MagicMock, mock_core_v1_api: MagicMock
+    ) -> None:
         """
         Test the `list_pods` method of the KubernetesClient.
 
@@ -104,22 +126,27 @@ class TestKubernetesClient(unittest.TestCase):
         mock_api_instance: MagicMock = MagicMock()
         mock_core_v1_api.return_value = mock_api_instance
         mock_pod_list: MagicMock = MagicMock(spec=V1PodList)
-        mock_api_instance.list_pod_for_all_namespaces.return_value = mock_pod_list
+        mock_api_instance.list_pod_for_all_namespaces.return_value = (
+            mock_pod_list
+        )
 
         client: KubernetesClient = KubernetesClient()
 
-        with patch('app.clients.kube.logging.debug') as mock_debug:
+        with patch("app.clients.kube.logging.debug") as mock_debug:
             result: V1PodList = client.list_pods()
 
-        mock_api_instance.list_pod_for_all_namespaces.assert_called_once_with(watch=False)
+        mock_api_instance.list_pod_for_all_namespaces.assert_called_once_with(
+            watch=False
+        )
         mock_debug.assert_called_once_with("Listing all pods in the cluster")
         self.assertEqual(result, mock_pod_list)
         self.assertIsInstance(result, type(mock_pod_list))
 
-
-    @patch('app.clients.kube.client.CoreV1Api')
-    @patch('app.clients.kube.config.load_kube_config')
-    def test_integration_kubeconfig_and_list_pods(self, mock_load_kube_config, mock_core_v1_api) -> None:
+    @patch("app.clients.kube.client.CoreV1Api")
+    @patch("app.clients.kube.load_kube_config")
+    def test_integration_kubeconfig_and_list_pods(
+        self, mock_load_kube_config: MagicMock, mock_core_v1_api: MagicMock
+    ) -> None:
         """
         Test the integration of KubernetesClient initialization with a kubeconfig path and the `list_pods` method.
 
@@ -135,15 +162,21 @@ class TestKubernetesClient(unittest.TestCase):
         mock_api_instance: MagicMock = MagicMock()
         mock_core_v1_api.return_value = mock_api_instance
         mock_pod_list: MagicMock = MagicMock(spec=V1PodList)
-        mock_api_instance.list_pod_for_all_namespaces.return_value: V1PodList = mock_pod_list
+        mock_api_instance.list_pod_for_all_namespaces.return_value = (
+            mock_pod_list
+        )
 
-        client: KubernetesClient = KubernetesClient(kube_config_path=kube_config_path)
+        client: KubernetesClient = KubernetesClient(
+            kube_config_path=kube_config_path
+        )
         result: V1PodList = client.list_pods()
 
         mock_load_kube_config.assert_called_once_with(kube_config_path)
-        mock_api_instance.list_pod_for_all_namespaces.assert_called_once_with(watch=False)
+        mock_api_instance.list_pod_for_all_namespaces.assert_called_once_with(
+            watch=False
+        )
         self.assertEqual(result, mock_pod_list)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

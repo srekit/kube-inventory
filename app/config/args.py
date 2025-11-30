@@ -3,8 +3,7 @@ from argparse import ArgumentParser
 
 
 def load_args(
-    env_github_access_token: str,
-    env_log_level: str
+    env_github_access_token: str, env_log_level: str
 ) -> argparse.Namespace:
     """
     Load and parse command-line arguments for the Kubernetes Inventory Tool CLI.
@@ -28,9 +27,13 @@ def load_args(
     3. Parses the command-line arguments using the combined parser.
     4. Returns the parsed arguments as a namespace.
     """
-    common_general_parsers: ArgumentParser = general_parsers_common(env_log_level=env_log_level)
+    common_general_parsers: ArgumentParser = general_parsers_common(
+        env_log_level=env_log_level
+    )
     config_general_parsers: ArgumentParser = general_parsers_config()
-    github_general_parsers: ArgumentParser = general_parsers_github(env_github_access_token=env_github_access_token)
+    github_general_parsers: ArgumentParser = general_parsers_github(
+        env_github_access_token=env_github_access_token
+    )
     kubernetes_general_parsers: ArgumentParser = general_parsers_kubernetes()
     output_general_parsers: ArgumentParser = general_parsers_output()
     web_general_parsers: ArgumentParser = general_parsers_web()
@@ -43,8 +46,8 @@ def load_args(
             github_general_parsers,
             kubernetes_general_parsers,
             output_general_parsers,
-            web_general_parsers
-        ]
+            web_general_parsers,
+        ],
     )
 
     args = parser.parse_args()
@@ -66,14 +69,16 @@ def general_parsers_common(env_log_level: str) -> ArgumentParser:
     Returns:
         ArgumentParser: An `ArgumentParser` instance configured with the `--log-level` argument.
     """
-    common_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
+    common_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
     common_general_parsers.add_argument(
         "--log-level",
         type=str,
         default=env_log_level,
         required=False if env_log_level else True,
         choices="DEBUG INFO WARNING ERROR CRITICAL".split(),
-        help="Logging level (environment variable: LOG_LEVEL, default: INFO)"
+        help="Logging level (environment variable: LOG_LEVEL, default: INFO)",
     )
 
     return common_general_parsers
@@ -91,14 +96,8 @@ def general_parsers_config() -> ArgumentParser:
             --default-apps-file-path: Path to the default apps configuration file.
             --extra-apps-file-path: Path to the extra apps configuration file.
     """
-    config_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
-
-    config_general_parsers.add_argument(
-        "--default-apps-file-path",
-        type=str,
-        default="config/default_apps.yaml",
-        required=False,
-        help="Default apps configuration file (default: config/default_apps.yaml)"
+    config_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
     )
 
     config_general_parsers.add_argument(
@@ -106,7 +105,7 @@ def general_parsers_config() -> ArgumentParser:
         type=str,
         default="config/extra_apps.yaml",
         required=False,
-        help="Extra apps configuration file (default: extra_apps.yaml)"
+        help="Extra apps configuration file (default: extra_apps.yaml)",
     )
 
     return config_general_parsers
@@ -129,14 +128,16 @@ def general_parsers_github(env_github_access_token: str) -> ArgumentParser:
                 environment variable.
             --github-api-url: The GitHub API URL, with a default value of "https://api.github.com".
     """
-    github_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
+    github_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
 
     github_general_parsers.add_argument(
         "--github-access-token",
         type=str,
         default=env_github_access_token,
         required=False if env_github_access_token else True,
-        help="GitHub access token (environment variable: GITHUB_ACCESS_TOKEN)"
+        help="GitHub access token (environment variable: GITHUB_ACCESS_TOKEN)",
     )
 
     github_general_parsers.add_argument(
@@ -144,7 +145,7 @@ def general_parsers_github(env_github_access_token: str) -> ArgumentParser:
         type=str,
         default="https://api.github.com",
         required=False,
-        help="GitHub API URL (default: https://api.github.com)"
+        help="GitHub API URL (default: https://api.github.com)",
     )
 
     return github_general_parsers
@@ -162,14 +163,16 @@ def general_parsers_kubernetes() -> ArgumentParser:
             --kube-config-path: Path to the Kubernetes configuration file. If not provided,
                 the in-cluster configuration will be used by default.
     """
-    kubernetes_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
+    kubernetes_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
 
     kubernetes_general_parsers.add_argument(
         "--kube-config-path",
         type=str,
         default=None,
         required=False,
-        help="Path to the Kubernetes configuration file (default: None, uses in-cluster config)"
+        help="Path to the Kubernetes configuration file (default: None, uses in-cluster config)",
     )
 
     return kubernetes_general_parsers
@@ -191,14 +194,16 @@ def general_parsers_output() -> ArgumentParser:
             --output-refresh-interval-seconds: Refresh interval in seconds for the output,
                 with a default value of 600 seconds.
     """
-    output_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
+    output_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
 
     output_general_parsers.add_argument(
         "--output-dir",
         type=str,
         default="inv_data",
         required=False,
-        help="Directory to output inventory content (default: inv_data)"
+        help="Directory to output inventory content (default: inv_data)",
     )
 
     output_general_parsers.add_argument(
@@ -207,7 +212,7 @@ def general_parsers_output() -> ArgumentParser:
         default="json",
         required=False,
         choices=["json", "yaml", "csv", "prometheus"],
-        help="Output format (default: json)"
+        help="Output format (default: json)",
     )
 
     output_general_parsers.add_argument(
@@ -215,7 +220,7 @@ def general_parsers_output() -> ArgumentParser:
         type=int,
         default=600,
         required=False,
-        help="Refresh interval in seconds for output (default: 600)"
+        help="Refresh interval in seconds for output (default: 600)",
     )
 
     return output_general_parsers
@@ -233,14 +238,16 @@ def general_parsers_web() -> ArgumentParser:
             --web-host: The host address for the web server, with a default value of "0.0.0.0".
             --web-port: The port number for the web server, with a default value of 8080.
     """
-    web_general_parsers: ArgumentParser = argparse.ArgumentParser(add_help=False)
+    web_general_parsers: ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
 
     web_general_parsers.add_argument(
         "--web-host",
         type=str,
         default="0.0.0.0",
         required=False,
-        help="Web server host (default: 0.0.0.0)"
+        help="Web server host (default: 0.0.0.0)",
     )
 
     web_general_parsers.add_argument(
@@ -248,7 +255,7 @@ def general_parsers_web() -> ArgumentParser:
         type=int,
         default=8080,
         required=False,
-        help="Web server port (default: 8080)"
+        help="Web server port (default: 8080)",
     )
 
     return web_general_parsers

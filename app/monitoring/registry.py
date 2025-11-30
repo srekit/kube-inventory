@@ -2,10 +2,12 @@ import logging
 import os
 import shutil
 
-PROMETHEUS_MULTIPROC_DIR = os.environ.get('PROMETHEUS_MULTIPROC_DIR', '/tmp/prometheus_multiproc')
+PROMETHEUS_MULTIPROC_DIR = os.environ.get(
+    "PROMETHEUS_MULTIPROC_DIR", "/tmp/prometheus_multiproc"
+)
 os.environ.setdefault("PROMETHEUS_MULTIPROC_DIR", PROMETHEUS_MULTIPROC_DIR)
-from prometheus_client import CollectorRegistry
-from prometheus_client.multiprocess import MultiProcessCollector
+from prometheus_client import CollectorRegistry  # noqa: E402
+from prometheus_client.multiprocess import MultiProcessCollector  # noqa: E402
 
 
 def get_registry() -> CollectorRegistry:
@@ -36,6 +38,8 @@ def init_storage(clean: bool = False) -> None:
         clean (bool): If True, the existing directory will be cleaned before initialization.
     """
     if clean and os.path.isdir(PROMETHEUS_MULTIPROC_DIR):
-        logging.debug("Cleaning PROMETHEUS_MULTIPROC_DIR: %s", PROMETHEUS_MULTIPROC_DIR)
+        logging.debug(
+            "Cleaning PROMETHEUS_MULTIPROC_DIR: %s", PROMETHEUS_MULTIPROC_DIR
+        )
         shutil.rmtree(PROMETHEUS_MULTIPROC_DIR, ignore_errors=True)
     os.makedirs(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)

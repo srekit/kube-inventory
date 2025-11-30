@@ -1,12 +1,15 @@
 import logging
 import time
 
-from typing import List
+from typing import List, Any
 
+from app.clients.kube import KubernetesClient
 from app.monitoring.metrics import register_metrics, update_metric
-from app.workflows import (pods_inventory, process)
+from app.workflows import pods_inventory, process
+from app.workflows.pods_inventory import PodsInventoried
 
-current_pods_inventory: list[str] = []
+
+current_pods_inventory: list[PodsInventoried] = []
 
 
 def get_inventory_json() -> list[dict]:
@@ -26,7 +29,7 @@ def get_inventory_json() -> list[dict]:
     return [pod.__dict__ for pod in current_pods_inventory]
 
 
-def run_inventory_loop(args_values) -> None:
+def run_inventory_loop(args_values: Any, kube_client: KubernetesClient) -> None:
     """
     Continuously generates and processes the inventory of Kubernetes pods.
 
@@ -44,8 +47,8 @@ def run_inventory_loop(args_values) -> None:
             - extra_apps_file_path (str): Path to the extra apps file.
             - github_access_token (str): GitHub access token for API authentication.
             - github_api_url (str): URL of the GitHub API.
-            - kube_config_path (str): Path to the Kubernetes configuration file.
             - output_refresh_interval_seconds (int): Interval (in seconds) between inventory refreshes.
+        kube_client: Kubernetes client object.
 
     Returns:
         None
@@ -54,12 +57,13 @@ def run_inventory_loop(args_values) -> None:
     register_metrics()
 
     while True:
-        pods_inventoried: List[pods_inventory.PodsInventoried] = process.generate(
-            default_apps_file_path=args_values.default_apps_file_path,
+        pods_inventoried: List[
+            pods_inventory.PodsInventoried
+        ] = process.generate(
             extra_apps_file_path=args_values.extra_apps_file_path,
             github_access_token=args_values.github_access_token,
             github_api_url=args_values.github_api_url,
-            kube_config_path=args_values.kube_config_path
+            kube_client=kube_client,
         )
 
         current_pods_inventory = pods_inventoried
@@ -77,15 +81,42 @@ def run_inventory_loop(args_values) -> None:
                     "name": pod_inventoried.name,
                     "namespace": pod_inventoried.namespace,
                     "repo": pod_inventoried.repo,
-                    "silenced": str(pod_inventoried.silenced).lower()
-                }
+                    "silenced": str(pod_inventoried.silenced).lower(),
+                },
+            )
+
+            update_metric(
+                metric_name="kube_inventory_pod_current_release_timestamp",
+                value=float(pod_inventoried.current_release_timestamp),
+                labels={
+                    "container_name": pod_inventoried.container_name,
+                    "current_release_date": pod_inventoried.current_release_date,
+                    "current_release_name": pod_inventoried.current_release_name,
+                    "name": pod_inventoried.name,
+                    "namespace": pod_inventoried.namespace,
+                    "repo": pod_inventoried.repo,
+                    "silenced": str(pod_inventoried.silenced).lower(),
+                },
+            )
+
+            update_metric(
+                metric_name="kube_inventory_pod_latest_release_timestamp",
+                value=float(pod_inventoried.latest_release_timestamp),
+                labels={
+                    "container_name": pod_inventoried.container_name,
+                    "latest_release_date": pod_inventoried.latest_release_date,
+                    "latest_release_name": pod_inventoried.latest_release_name,
+                    "name": pod_inventoried.name,
+                    "namespace": pod_inventoried.namespace,
+                    "repo": pod_inventoried.repo,
+                    "silenced": str(pod_inventoried.silenced).lower(),
+                },
             )
 
         total_pods: int = len(pods_inventoried)
-        update_metric(
-            metric_name="kube_inventory_pods_total",
-            value=total_pods
+        update_metric(metric_name="kube_inventory_pods_total", value=total_pods)
+        logging.info(
+            f"Pods inventoried: {len(pods_inventoried)}, next refresh in {args_values.output_refresh_interval_seconds} seconds"
         )
-        logging.info(f"Pods inventoried: {len(pods_inventoried)}, next refresh in {args_values.output_refresh_interval_seconds} seconds")
 
         time.sleep(args_values.output_refresh_interval_seconds)
