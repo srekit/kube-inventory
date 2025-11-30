@@ -1,0 +1,61 @@
+apps:
+  alertmanager:
+    repo: "prometheus/alertmanager"
+    label_key: "app.kubernetes.io/name"
+    label_value: "alertmanager"
+  coredns:
+    repo: "coredns/coredns"
+    label_key: "k8s-app"
+    label_value: "kube-dns"
+  etcd:
+    repo: "etcd-io/etcd"
+    label_key: "component"
+    label_value: "etcd"
+  grafana:
+    repo: "grafana/grafana"
+    label_key: "app.kubernetes.io/name"
+    label_value: "grafana"
+  ingress-nginx:
+    repo: "kubernetes/ingress-nginx"
+    label_key: "app.kubernetes.io/name"
+    label_value: "ingress-nginx"
+    container_name: "controller"
+    prefix: "controller-"
+  kube-apiserver:
+    repo: "kubernetes/kubernetes"
+    label_key: "component"
+    label_value: "kube-apiserver"
+    container_name: "kube-apiserver"
+  kube-controller-manager:
+    repo: "kubernetes/kubernetes"
+    label_key: "component"
+    label_value: "kube-controller-manager"
+  kube-proxy:
+    repo: "kubernetes/kubernetes"
+    label_key: "k8s-app"
+    label_value: "kube-proxy"
+  kube-state-metrics:
+    repo: "kubernetes/kube-state-metrics"
+    label_key: "app.kubernetes.io/name"
+    label_value: "kube-state-metrics"
+  kube-scheduler:
+    repo: "kubernetes/kubernetes"
+    label_key: "component"
+    label_value: "kube-scheduler"
+  node-exporter:
+    repo: "prometheus/node_exporter"
+    label_key: "app.kubernetes.io/name"
+    label_value: "prometheus-node-exporter"
+  prometheus:
+    repo: "prometheus/prometheus"
+    label_key: "app.kubernetes.io/name"
+    label_value: "prometheus"
+  prometheus-operator:
+    repo: "prometheus-operator/prometheus-operator"
+    label_key: "app.kubernetes.io/name"
+    label_value: "kube-prometheus-stack-prometheus-operator"
+    container_name: "kube-prometheus-stack"
+  pushgateway:
+    repo: "prometheus/pushgateway"
+    label_key: "app.kubernetes.io/name"
+    label_value: "prometheus-pushgateway"

@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "kube_inventory"
+version = "0.1.0"
+description = "Inventory of softwares running in a Kubernetes cluster"
+authors = ["Emerson Candido <emerson.candido@live.com>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+python-dotenv = "1.1.1"
+kubernetes = "34.1.0"
+requests = "2.32.5"
+file = "^0.3.0"
+poetry-core = "^2.2.1"
+prometheus-client = "0.23.1"
+gunicorn = "23.0.0"
+flask = "3.1.2"
+psutil = "7.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.4.1"
+coverage = "7.9.2"

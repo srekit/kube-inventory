@@ -1,0 +1,25 @@
+name: Build Poetry Caller
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
+
+jobs:
+  build-poetry:
+    name: Build Poetry Caller Job
+    uses: srekit/github-workflows/.github/workflows/build-poetry.yaml@main
