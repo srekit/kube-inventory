@@ -22,4 +22,4 @@ $ poetry run python kube_inventory
 $ poetry run python -m unittest discover tests/
 ```
 
-Validate workflow 9
+Validate workflow 10
