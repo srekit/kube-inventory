@@ -1,0 +1,15 @@
+name: Release Python
+
+on:
+  release:
+    types:
+      - prereleased
+      - released
+
+permissions:
+  contents: read
+
+jobs:
+  python-release:
+    name: Release Python Application
+    uses: srekit/github-workflows/.github/workflows/release-python.yaml@feature/release-python
