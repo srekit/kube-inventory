@@ -6,7 +6,7 @@ from app.libs.github_lib import (
     count_releases_between,
     _extract_version_parts,
     get_release_with_fallback,
-    _normalize_version_for_lookup
+    _normalize_version_for_lookup,
 )
 
 
@@ -33,12 +33,11 @@ class TestCountReleasesBetween:
         mock_client.list_releases.return_value = [
             {"name": "v2.0.0"},
             {"name": "v1.5.0"},
-            {"name": "v1.0.0"}
+            {"name": "v1.0.0"},
         ]
 
         result: int = count_releases_between(mock_client, "test/repo", "v1.0.0")
         assert result == 2
-
 
     def test_count_releases_between_current_not_found(self) -> None:
         """
@@ -57,12 +56,11 @@ class TestCountReleasesBetween:
         mock_client: Mock = Mock()
         mock_client.list_releases.return_value = [
             {"name": "v2.0.0"},
-            {"name": "v1.5.0"}
+            {"name": "v1.5.0"},
         ]
 
         result: int = count_releases_between(mock_client, "test/repo", "v1.0.0")
         assert result == -1
-
 
     def test_count_releases_between_invalid_release_format(self) -> None:
         """
@@ -84,14 +82,15 @@ class TestCountReleasesBetween:
         mock_client.list_releases.return_value = [
             {"name": "v2.0.0"},
             {"name": "invalid-format"},
-            {"name": "v1.0.0"}
+            {"name": "v1.0.0"},
         ]
 
-        with patch('app.libs.github_lib.logging') as mock_logging:
-            result: int = count_releases_between(mock_client, "test/repo", "v1.0.0")
+        with patch("app.libs.github_lib.logging") as mock_logging:
+            result: int = count_releases_between(
+                mock_client, "test/repo", "v1.0.0"
+            )
             assert result == 1
             mock_logging.warning.assert_called()
-
 
     def test_count_releases_between_same_version(self) -> None:
         """
@@ -107,9 +106,7 @@ class TestCountReleasesBetween:
         - The function returns 0, indicating no releases exist between the specified release and itself.
         """
         mock_client: Mock = Mock()
-        mock_client.list_releases.return_value = [
-            {"name": "v1.0.0"}
-        ]
+        mock_client.list_releases.return_value = [{"name": "v1.0.0"}]
 
         result: int = count_releases_between(mock_client, "test/repo", "v1.0.0")
         assert result == 0
@@ -133,7 +130,6 @@ class TestExtractVersionParts:
         result: tuple[int, float] = _extract_version_parts("v1.2.3")
         assert result == (1, 2.3)
 
-
     def test_extract_version_parts_without_v_prefix(self) -> None:
         """
         Test the `_extract_version_parts` function with a version string that does not include a 'v' prefix.
@@ -150,7 +146,6 @@ class TestExtractVersionParts:
         """
         result: tuple[int, float] = _extract_version_parts("1.2.3")
         assert result == (1, 2.3)
-
 
     def test_extract_version_parts_with_at_symbol(self) -> None:
         """
@@ -169,7 +164,6 @@ class TestExtractVersionParts:
         result: tuple[int, float] = _extract_version_parts("v1.2.3@sha123")
         assert result == (1, 2.3)
 
-
     def test_extract_version_parts_with_hyphen(self) -> None:
         """
         Test the `_extract_version_parts` function with a version string containing a hyphen.
@@ -186,7 +180,6 @@ class TestExtractVersionParts:
         """
         result: tuple[int, float] = _extract_version_parts("release-v1.2.3")
         assert result == (1, 2.3)
-
 
     def test_extract_version_parts_with_space(self) -> None:
         """
@@ -205,7 +198,6 @@ class TestExtractVersionParts:
         result: tuple[int, float] = _extract_version_parts("release v1.2.3")
         assert result == (1, 2.3)
 
-
     def test_extract_version_parts_major_only(self) -> None:
         """
         Test the `_extract_version_parts` function with a version string containing only the major version.
@@ -223,7 +215,6 @@ class TestExtractVersionParts:
         result: tuple[int, float] = _extract_version_parts("v1.0")
         assert result == (1, 0.0)
 
-
     def test_extract_version_parts_invalid_format(self) -> None:
         """
         Test the `_extract_version_parts` function with an invalid version string format.
@@ -239,7 +230,6 @@ class TestExtractVersionParts:
         """
         with pytest.raises(ValueError, match="Invalid release name format"):
             _extract_version_parts("invalid-format")
-
 
     def test_extract_version_parts_empty_string(self) -> None:
         """
@@ -274,11 +264,14 @@ class TestGetReleaseWithFallback:
         - The function returns a dictionary containing the release information with the tag name "v1.0.0".
         """
         mock_client: Mock = Mock()
-        mock_client.get_release_by_tag_name.return_value = {"tag_name": "v1.0.0"}
+        mock_client.get_release_by_tag_name.return_value = {
+            "tag_name": "v1.0.0"
+        }
 
-        result: dict = get_release_with_fallback(mock_client, None, "test/repo", "v1.0.0")
+        result: dict = get_release_with_fallback(
+            mock_client, None, "test/repo", "v1.0.0"
+        )
         assert result == {"tag_name": "v1.0.0"}
-
 
     def test_get_release_with_fallback_found_with_variation(self) -> None:
         """
@@ -297,12 +290,13 @@ class TestGetReleaseWithFallback:
         mock_client: Mock = Mock()
         mock_client.get_release_by_tag_name.side_effect = [
             None,  # First variation fails
-            {"tag_name": "1.0.0"}  # Second variation succeeds
+            {"tag_name": "1.0.0"},  # Second variation succeeds
         ]
 
-        result: dict = get_release_with_fallback(mock_client, None, "test/repo", "v1.0.0")
+        result: dict = get_release_with_fallback(
+            mock_client, None, "test/repo", "v1.0.0"
+        )
         assert result == {"tag_name": "1.0.0"}
-
 
     def test_get_release_with_fallback_not_found(self) -> None:
         """
@@ -322,11 +316,12 @@ class TestGetReleaseWithFallback:
         mock_client: Mock = Mock()
         mock_client.get_release_by_tag_name.side_effect = Exception("Not found")
 
-        with patch('app.libs.github_lib.logging') as mock_logging:
-            result: dict = get_release_with_fallback(mock_client, None, "test/repo", "v1.0.0")
+        with patch("app.libs.github_lib.logging") as mock_logging:
+            result: dict = get_release_with_fallback(
+                mock_client, None, "test/repo", "v1.0.0"
+            )
             assert result == {}
             mock_logging.warning.assert_called()
-
 
     def test_get_release_with_fallback_with_prefix(self) -> None:
         """
@@ -343,9 +338,13 @@ class TestGetReleaseWithFallback:
         - The function returns a dictionary containing the release information with the tag name "controller-v1.0.0".
         """
         mock_client: Mock = Mock()
-        mock_client.get_release_by_tag_name.return_value = {"tag_name": "controller-v1.0.0"}
+        mock_client.get_release_by_tag_name.return_value = {
+            "tag_name": "controller-v1.0.0"
+        }
 
-        result: dict = get_release_with_fallback(mock_client, "controller-", "test/repo", "v1.0.0")
+        result: dict = get_release_with_fallback(
+            mock_client, "controller-", "test/repo", "v1.0.0"
+        )
         assert result == {"tag_name": "controller-v1.0.0"}
 
 
@@ -369,7 +368,6 @@ class TestNormalizeVersionForLookup:
         expected: list[str] = ["1.0.0", "v1.0.0"]
         assert result == expected
 
-
     def test_normalize_version_for_lookup_with_v_prefix(self) -> None:
         """
         Test the `_normalize_version_for_lookup` function with a version string that includes a 'v' prefix.
@@ -388,7 +386,6 @@ class TestNormalizeVersionForLookup:
         result: list[str] = _normalize_version_for_lookup(None, "v1.0.0")
         expected: list[str] = ["v1.0.0", "1.0.0"]
         assert result == expected
-
 
     def test_normalize_version_for_lookup_with_at_symbol(self) -> None:
         """
@@ -409,7 +406,6 @@ class TestNormalizeVersionForLookup:
         expected: list[str] = ["v1.0.0", "1.0.0"]
         assert result == expected
 
-
     def test_normalize_version_for_lookup_with_prefix_and_version(self) -> None:
         """
         Test the `_normalize_version_for_lookup` function with a prefix and version string.
@@ -426,10 +422,11 @@ class TestNormalizeVersionForLookup:
           without the 'v' prefix, and the version string with the prefix applied:
           ["v1.0.0", "1.0.0", "controller-1.0.0"].
         """
-        result: list[str] = _normalize_version_for_lookup("controller-", "v1.0.0")
+        result: list[str] = _normalize_version_for_lookup(
+            "controller-", "v1.0.0"
+        )
         expected: list[str] = ["v1.0.0", "1.0.0", "controller-1.0.0"]
         assert result == expected
-
 
     def test_normalize_version_for_lookup_with_prefix_matching(self) -> None:
         """
@@ -449,11 +446,18 @@ class TestNormalizeVersionForLookup:
           - Variations with the prefix applied multiple times.
           - The prefix itself and its variation with a 'v' prefix.
         """
-        result: list[str] = _normalize_version_for_lookup("controller-", "controller-v1.0.0")
-        expected: list[str] = ["controller-v1.0.0", "v1.0.0", "vcontroller-v1.0.0", "controller-vcontroller-v1.0.0", "controller",
-                    "vcontroller"]
+        result: list[str] = _normalize_version_for_lookup(
+            "controller-", "controller-v1.0.0"
+        )
+        expected: list[str] = [
+            "controller-v1.0.0",
+            "v1.0.0",
+            "vcontroller-v1.0.0",
+            "controller-vcontroller-v1.0.0",
+            "controller",
+            "vcontroller",
+        ]
         assert result == expected
-
 
     def test_normalize_version_for_lookup_with_hyphen(self) -> None:
         """
@@ -471,10 +475,16 @@ class TestNormalizeVersionForLookup:
           with a 'v' prefix, and variations without the version number:
           ["release-v1.0.0", "vrelease-v1.0.0", "release", "vrelease"].
         """
-        result: list[str] = _normalize_version_for_lookup(None, "release-v1.0.0")
-        expected: list[str] = ["release-v1.0.0", "vrelease-v1.0.0", "release", "vrelease"]
+        result: list[str] = _normalize_version_for_lookup(
+            None, "release-v1.0.0"
+        )
+        expected: list[str] = [
+            "release-v1.0.0",
+            "vrelease-v1.0.0",
+            "release",
+            "vrelease",
+        ]
         assert result == expected
-
 
     def test_normalize_version_for_lookup_deduplication(self) -> None:
         """
@@ -493,7 +503,6 @@ class TestNormalizeVersionForLookup:
         """
         result: list[str] = _normalize_version_for_lookup("test-", "test-1.0.0")
         assert len(result) == len(set(result))
-
 
     def test_normalize_version_for_lookup_empty_prefix(self) -> None:
         """

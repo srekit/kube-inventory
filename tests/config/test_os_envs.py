@@ -26,8 +26,10 @@ class TestLoadEnvs(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-
-    @patch.dict(os.environ, {"GITHUB_ACCESS_TOKEN": "test_token_123", "LOG_LEVEL": "DEBUG"})
+    @patch.dict(
+        os.environ,
+        {"GITHUB_ACCESS_TOKEN": "test_token_123", "LOG_LEVEL": "DEBUG"},
+    )
     def test_load_envs_all_environment_variables_set(self) -> None:
         """
         Test load_envs when all environment variables are set.
@@ -48,8 +50,9 @@ class TestLoadEnvs(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-
-    @patch.dict(os.environ, {"GITHUB_ACCESS_TOKEN": "my_github_token"}, clear=True)
+    @patch.dict(
+        os.environ, {"GITHUB_ACCESS_TOKEN": "my_github_token"}, clear=True
+    )
     def test_load_envs_only_github_token_set(self) -> None:
         """
         Test load_envs when only GITHUB_ACCESS_TOKEN is set.
@@ -69,7 +72,6 @@ class TestLoadEnvs(unittest.TestCase):
         }
 
         self.assertEqual(result, expected)
-
 
     @patch.dict(os.environ, {"LOG_LEVEL": "ERROR"}, clear=True)
     def test_load_envs_only_log_level_set(self) -> None:
@@ -92,7 +94,6 @@ class TestLoadEnvs(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-
     @patch.dict(os.environ, {"GITHUB_ACCESS_TOKEN": "", "LOG_LEVEL": ""})
     def test_load_envs_empty_environment_variables(self) -> None:
         """
@@ -114,7 +115,6 @@ class TestLoadEnvs(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
-
     def test_load_envs_return_type_is_dict(self) -> None:
         """
         Test that load_envs returns a dictionary.
@@ -124,8 +124,7 @@ class TestLoadEnvs(unittest.TestCase):
         result: dict = load_envs()
         self.assertIsInstance(result, dict)
 
-
-    def test_load_envs_has_required_keys(self)-> None:
+    def test_load_envs_has_required_keys(self) -> None:
         """
         Test that load_envs returns a dictionary with required keys.
 

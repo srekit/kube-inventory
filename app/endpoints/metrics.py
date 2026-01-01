@@ -1,4 +1,8 @@
-from prometheus_client import CollectorRegistry, CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import (
+    CollectorRegistry,
+    CONTENT_TYPE_LATEST,
+    generate_latest,
+)
 
 from app.monitoring.registry import get_registry
 

@@ -16,11 +16,11 @@ def setup_logging(log_level_str: str) -> None:
     Returns:
         None
     """
-    log_level: str = getattr(logging, log_level_str, logging.INFO)
+    log_level: int = getattr(logging, log_level_str, logging.INFO)
     logging.basicConfig(
         stream=sys.stdout,
         level=log_level,
         format='{"timestamp": "%(asctime)s.%(msecs)03dZ", "level": "%(levelname)s", "message": "%(message)s"}',
-        datefmt='%Y-%m-%dT%H:%M:%S'
+        datefmt="%Y-%m-%dT%H:%M:%S",
     )
     logging.log(logging.INFO, "Log level set to %s", log_level_str)

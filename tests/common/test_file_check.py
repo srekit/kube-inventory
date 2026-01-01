@@ -1,14 +1,14 @@
 import unittest
 import yaml
 
-from unittest.mock import mock_open, patch
+from unittest.mock import mock_open, patch, MagicMock
 
 from app.common.file_check import check_is_yaml, file_exists
 
 
 class TestFileExists(unittest.TestCase):
-    @patch('os.path.exists')
-    def test_file_exists_when_true(self, mock_exists) -> None:
+    @patch("os.path.exists")
+    def test_file_exists_when_true(self, mock_exists: MagicMock) -> None:
         """
         Test the `file_exists` function when the file exists.
 
@@ -33,9 +33,8 @@ class TestFileExists(unittest.TestCase):
         self.assertTrue(result)
         mock_exists.assert_called_once_with(test_file_path)
 
-
-    @patch('os.path.exists')
-    def test_file_exists_when_false(self, mock_exists) -> None:
+    @patch("os.path.exists")
+    def test_file_exists_when_false(self, mock_exists: MagicMock) -> None:
         """
         Test the `file_exists` function when the file does not exist.
 
@@ -63,9 +62,11 @@ class TestFileExists(unittest.TestCase):
 
 
 class TestCheckIsYaml(unittest.TestCase):
-    @patch('app.common.file_check.file_exists')
-    @patch('builtins.open', new_callable=mock_open, read_data="key: value")
-    def test_check_is_yaml_valid_file(self, mock_file, mock_file_exists) -> None:
+    @patch("app.common.file_check.file_exists")
+    @patch("builtins.open", new_callable=mock_open, read_data="key: value")
+    def test_check_is_yaml_valid_file(
+        self, mock_file: MagicMock, mock_file_exists: MagicMock
+    ) -> None:
         """
         Test the `check_is_yaml` function with a valid YAML file.
 
@@ -92,9 +93,10 @@ class TestCheckIsYaml(unittest.TestCase):
         self.assertTrue(result)
         mock_file_exists.assert_called_once_with(file_path=test_file_path)
 
-
-    @patch('app.common.file_check.file_exists')
-    def test_check_is_yaml_nonexistent_file(self, mock_file_exists) -> None:
+    @patch("app.common.file_check.file_exists")
+    def test_check_is_yaml_nonexistent_file(
+        self, mock_file_exists: MagicMock
+    ) -> None:
         """
         Test the `check_is_yaml` function with a nonexistent file.
 
@@ -119,11 +121,15 @@ class TestCheckIsYaml(unittest.TestCase):
         self.assertFalse(result)
         mock_file_exists.assert_called_once_with(file_path=test_file_path)
 
-
-    @patch('app.common.file_check.file_exists')
-    @patch('builtins.open', new_callable=mock_open, read_data="{invalid: yaml:")
-    @patch('yaml.safe_load')
-    def test_check_is_yaml_invalid_format(self, mock_yaml_load, mock_file, mock_file_exists) -> None:
+    @patch("app.common.file_check.file_exists")
+    @patch("builtins.open", new_callable=mock_open, read_data="{invalid: yaml:")
+    @patch("yaml.safe_load")
+    def test_check_is_yaml_invalid_format(
+        self,
+        mock_yaml_load: MagicMock,
+        mock_file: MagicMock,
+        mock_file_exists: MagicMock,
+    ) -> None:
         """
         Test the `check_is_yaml` function with an invalid YAML file format.
 

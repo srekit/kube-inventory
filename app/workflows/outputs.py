@@ -32,7 +32,7 @@ def json(pods: List[pods_inventory.PodsInventoried]) -> list[dict]:
             "current_release_name": pod.current_release_name,
             "latest_release_date": pod.latest_release_date,
             "latest_release_name": pod.latest_release_name,
-            "versions_to_latest_release": pod.versions_to_latest_release
+            "versions_to_latest_release": pod.versions_to_latest_release,
         }
         output.append(pod_info)
     return output

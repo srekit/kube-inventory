@@ -36,7 +36,6 @@ class TestArgsParsers(unittest.TestCase):
         args: Namespace = parser.parse_args([])
         self.assertEqual(args.log_level, "INFO")
 
-
     def test_general_parsers_config(self) -> None:
         """
         Test the `general_parsers_config` function.
@@ -56,9 +55,7 @@ class TestArgsParsers(unittest.TestCase):
         """
         parser: ArgumentParser = general_parsers_config()
         args: Namespace = parser.parse_args([])
-        self.assertEqual(args.default_apps_file_path, "config/default_apps.yaml")
         self.assertEqual(args.extra_apps_file_path, "config/extra_apps.yaml")
-
 
     def test_general_parsers_github_with_token(self) -> None:
         """
@@ -77,11 +74,12 @@ class TestArgsParsers(unittest.TestCase):
         Returns:
             None
         """
-        parser: ArgumentParser = general_parsers_github(env_github_access_token="token123")
+        parser: ArgumentParser = general_parsers_github(
+            env_github_access_token="token123"
+        )
         args: Namespace = parser.parse_args([])
         self.assertEqual(args.github_access_token, "token123")
         self.assertEqual(args.github_api_url, "https://api.github.com")
-
 
     def test_general_parsers_github_without_token(self) -> None:
         """
@@ -99,10 +97,11 @@ class TestArgsParsers(unittest.TestCase):
         Returns:
             None
         """
-        parser: ArgumentParser = general_parsers_github(env_github_access_token="")
+        parser: ArgumentParser = general_parsers_github(
+            env_github_access_token=""
+        )
         with self.assertRaises(SystemExit):
             parser.parse_args([])
-
 
     def test_general_parsers_kubernetes(self) -> None:
         """
@@ -123,7 +122,6 @@ class TestArgsParsers(unittest.TestCase):
         parser: ArgumentParser = general_parsers_kubernetes()
         args: Namespace = parser.parse_args([])
         self.assertIsNone(args.kube_config_path)
-
 
     def test_general_parsers_output(self) -> None:
         """
@@ -149,7 +147,6 @@ class TestArgsParsers(unittest.TestCase):
         self.assertEqual(args.output_mode, "json")
         self.assertEqual(args.output_refresh_interval_seconds, 600)
 
-
     def test_general_parsers_web(self) -> None:
         """
         Test the `general_parsers_web` function.
@@ -172,7 +169,6 @@ class TestArgsParsers(unittest.TestCase):
         self.assertEqual(args.web_host, "0.0.0.0")
         self.assertEqual(args.web_port, 8080)
 
-
     @patch("sys.argv", ["prog"])
     def test_load_args_defaults(self) -> None:
         """
@@ -192,7 +188,9 @@ class TestArgsParsers(unittest.TestCase):
         Returns:
             None
         """
-        args: Namespace = load_args(env_github_access_token="token123", env_log_level="INFO")
+        args: Namespace = load_args(
+            env_github_access_token="token123", env_log_level="INFO"
+        )
         self.assertEqual(args.github_access_token, "token123")
         self.assertEqual(args.log_level, "INFO")
         self.assertEqual(args.web_port, 8080)

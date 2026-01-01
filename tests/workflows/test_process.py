@@ -1,6 +1,7 @@
 import unittest
 import tempfile
 import os
+from typing import cast
 from unittest.mock import patch, MagicMock
 from app.workflows.process import output
 from app.workflows import pods_inventory
@@ -15,10 +16,15 @@ class TestOutput(unittest.TestCase):
         to simulate a pod inventory. It also creates a temporary directory for use in
         the tests.
         """
-        self.mock_pod: MagicMock = MagicMock(spec=pods_inventory.PodsInventoried)
-        self.pods = [self.mock_pod]
-        self.temp_dir = tempfile.mkdtemp()
+        self.mock_pod: MagicMock = MagicMock(
+            spec=pods_inventory.PodsInventoried
+        )
 
+        self.pods: list[pods_inventory.PodsInventoried] = cast(
+            list[pods_inventory.PodsInventoried], [self.mock_pod]
+        )
+
+        self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self) -> None:
         """
@@ -32,10 +38,11 @@ class TestOutput(unittest.TestCase):
                 os.remove(os.path.join(self.temp_dir, file))
             os.rmdir(self.temp_dir)
 
-
-    @patch('app.workflows.process.file_operations.content_to_file')
-    @patch('app.workflows.process.outputs.csv')
-    def test_output_csv_mode(self, mock_csv, mock_content_to_file) -> None:
+    @patch("app.workflows.process.file_operations.content_to_file")
+    @patch("app.workflows.process.outputs.csv")
+    def test_output_csv_mode(
+        self, mock_csv: MagicMock, mock_content_to_file: MagicMock
+    ) -> None:
         """
         Tests the `output` function with CSV mode.
 
@@ -54,14 +61,14 @@ class TestOutput(unittest.TestCase):
 
         mock_csv.assert_called_once_with(self.pods)
         mock_content_to_file.assert_called_once_with(
-            file_path=f"{self.temp_dir}/inventory.csv",
-            content="csv,data"
+            file_path=f"{self.temp_dir}/inventory.csv", content="csv,data"
         )
 
-
-    @patch('app.workflows.process.file_operations.content_to_file')
-    @patch('app.workflows.process.outputs.json')
-    def test_output_json_mode(self, mock_json, mock_content_to_file) -> None:
+    @patch("app.workflows.process.file_operations.content_to_file")
+    @patch("app.workflows.process.outputs.json")
+    def test_output_json_mode(
+        self, mock_json: MagicMock, mock_content_to_file: MagicMock
+    ) -> None:
         """
         Tests the `output` function with JSON mode.
 
@@ -81,13 +88,14 @@ class TestOutput(unittest.TestCase):
         mock_json.assert_called_once_with(self.pods)
         mock_content_to_file.assert_called_once_with(
             file_path=f"{self.temp_dir}/inventory.json",
-            content=[{"key": "value"}]
+            content=[{"key": "value"}],
         )
 
-
-    @patch('app.workflows.process.logging.error')
-    @patch('app.workflows.process.sys.exit')
-    def test_output_unsupported_mode(self, mock_exit, mock_log_error) -> None:
+    @patch("app.workflows.process.logging.error")
+    @patch("app.workflows.process.sys.exit")
+    def test_output_unsupported_mode(
+        self, mock_exit: MagicMock, mock_log_error: MagicMock
+    ) -> None:
         """
         Tests the `output` function with an unsupported mode.
 
@@ -105,5 +113,5 @@ class TestOutput(unittest.TestCase):
         mock_exit.assert_called_once_with(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

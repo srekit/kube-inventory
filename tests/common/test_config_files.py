@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import yaml
 
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from app.common.config_files import load_app_configs
 
@@ -20,18 +20,17 @@ class TestLoadAppConfigs(unittest.TestCase):
         """
         self.temp_dir: str = tempfile.mkdtemp()
         self.default_config: dict = {
-            'apps': {
-                'app1': {'repo': 'user/app1', 'version': '1.0.0'},
-                'app2': {'repo': 'user/app2', 'version': '2.0.0'}
+            "apps": {
+                "app1": {"repo": "user/app1", "version": "1.0.0"},
+                "app2": {"repo": "user/app2", "version": "2.0.0"},
             }
         }
         self.extra_config: dict = {
-            'apps': {
-                'app3': {'repo': 'user/app3', 'version': '3.0.0'},
-                'app1': {'repo': 'user/app1-updated', 'version': '1.1.0'}
+            "apps": {
+                "app3": {"repo": "user/app3", "version": "3.0.0"},
+                "app1": {"repo": "user/app1-updated", "version": "1.1.0"},
             }
         }
-
 
     def tearDown(self) -> None:
         """
@@ -44,7 +43,6 @@ class TestLoadAppConfigs(unittest.TestCase):
         for file in os.listdir(self.temp_dir):
             os.remove(os.path.join(self.temp_dir, file))
         os.rmdir(self.temp_dir)
-
 
     def test_load_default_config_only(self) -> None:
         """
@@ -62,16 +60,15 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the returned configuration does not match the expected values.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        with open(default_file, 'w') as f:
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
 
         result: dict = load_app_configs(default_file)
 
         self.assertEqual(result, self.default_config)
-        self.assertIn('app1', result['apps'])
-        self.assertIn('app2', result['apps'])
-
+        self.assertIn("app1", result["apps"])
+        self.assertIn("app2", result["apps"])
 
     def test_load_with_extra_config(self) -> None:
         """
@@ -91,23 +88,22 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the merged configuration does not match the expected values.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        extra_file: str = os.path.join(self.temp_dir, 'extra.yaml')
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        extra_file: str = os.path.join(self.temp_dir, "extra.yaml")
 
-        with open(default_file, 'w') as f:
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
-        with open(extra_file, 'w') as f:
+        with open(extra_file, "w") as f:
             yaml.dump(self.extra_config, f)
 
         result: dict = load_app_configs(default_file, extra_file)
 
-        self.assertIn('app1', result['apps'])
-        self.assertIn('app2', result['apps'])
-        self.assertIn('app3', result['apps'])
+        self.assertIn("app1", result["apps"])
+        self.assertIn("app2", result["apps"])
+        self.assertIn("app3", result["apps"])
 
-        self.assertEqual(result['apps']['app1']['repo'], 'user/app1-updated')
-        self.assertEqual(result['apps']['app1']['version'], '1.1.0')
-
+        self.assertEqual(result["apps"]["app1"]["repo"], "user/app1-updated")
+        self.assertEqual(result["apps"]["app1"]["version"], "1.1.0")
 
     def test_default_config_file_not_found(self) -> None:
         """
@@ -127,16 +123,17 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             SystemExit: If the program exits due to the missing configuration file.
         """
-        with patch('sys.exit') as mock_exit:
-            with patch('logging.error') as mock_log:
+        with patch("sys.exit") as mock_exit:
+            with patch("logging.error") as mock_log:
                 mock_exit.side_effect = SystemExit(1)
 
                 with self.assertRaises(SystemExit):
-                    load_app_configs('/nonexistent/file.yaml')
+                    load_app_configs("/nonexistent/file.yaml")
 
-                mock_log.assert_called_once_with("Default apps configuration file not found: /nonexistent/file.yaml")
+                mock_log.assert_called_once_with(
+                    "Default apps configuration file not found: /nonexistent/file.yaml"
+                )
                 mock_exit.assert_called_once_with(1)
-
 
     def test_extra_config_file_not_found(self) -> None:
         """
@@ -157,16 +154,17 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the returned configuration does not match the expected values.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        with open(default_file, 'w') as f:
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
 
-        with patch('logging.warning') as mock_log:
-            result: dict = load_app_configs(default_file, '/nonexistent/extra.yaml')
+        with patch("logging.warning") as mock_log:
+            result: dict = load_app_configs(
+                default_file, "/nonexistent/extra.yaml"
+            )
 
             self.assertEqual(result, self.default_config)
             mock_log.assert_called_once()
-
 
     def test_extra_config_empty(self) -> None:
         """
@@ -185,18 +183,17 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the returned configuration does not match the expected values.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        extra_file: str = os.path.join(self.temp_dir, 'extra.yaml')
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        extra_file: str = os.path.join(self.temp_dir, "extra.yaml")
 
-        with open(default_file, 'w') as f:
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
-        with open(extra_file, 'w') as f:
-            f.write('')  # Empty file
+        with open(extra_file, "w") as f:
+            f.write("")  # Empty file
 
         result: dict = load_app_configs(default_file, extra_file)
 
         self.assertEqual(result, self.default_config)
-
 
     def test_extra_config_no_apps_key(self) -> None:
         """
@@ -216,21 +213,20 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the returned configuration does not match the expected values.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        extra_file: str = os.path.join(self.temp_dir, 'extra.yaml')
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        extra_file: str = os.path.join(self.temp_dir, "extra.yaml")
 
-        with open(default_file, 'w') as f:
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
-        with open(extra_file, 'w') as f:
-            yaml.dump({'other_key': 'value'}, f)
+        with open(extra_file, "w") as f:
+            yaml.dump({"other_key": "value"}, f)
 
         result: dict = load_app_configs(default_file, extra_file)
 
         self.assertEqual(result, self.default_config)
 
-
-    @patch('logging.debug')
-    def test_logging_calls(self, mock_debug) -> None:
+    @patch("logging.debug")
+    def test_logging_calls(self, mock_debug: MagicMock) -> None:
         """
         Test the number of debug logging calls during configuration loading.
 
@@ -249,12 +245,12 @@ class TestLoadAppConfigs(unittest.TestCase):
         Raises:
             AssertionError: If the number of debug logging calls does not match the expected value.
         """
-        default_file: str = os.path.join(self.temp_dir, 'default.yaml')
-        extra_file: str = os.path.join(self.temp_dir, 'extra.yaml')
+        default_file: str = os.path.join(self.temp_dir, "default.yaml")
+        extra_file: str = os.path.join(self.temp_dir, "extra.yaml")
 
-        with open(default_file, 'w') as f:
+        with open(default_file, "w") as f:
             yaml.dump(self.default_config, f)
-        with open(extra_file, 'w') as f:
+        with open(extra_file, "w") as f:
             yaml.dump(self.extra_config, f)
 
         load_app_configs(default_file, extra_file)
@@ -262,5 +258,5 @@ class TestLoadAppConfigs(unittest.TestCase):
         self.assertEqual(mock_debug.call_count, 3)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

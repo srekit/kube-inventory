@@ -43,7 +43,6 @@ class TestListJson:
         assert pod_data["containers"][0]["name"] == "nginx"
         assert pod_data["containers"][0]["image"] == "nginx:1.20"
 
-
     def test_list_json_single_pod_multiple_containers(self) -> None:
         """
         Test the `list_json` function with a single pod containing multiple containers.
@@ -87,7 +86,6 @@ class TestListJson:
         assert pod_data["containers"][0]["image"] == "nginx:1.20"
         assert pod_data["containers"][1]["name"] == "sidecar"
         assert pod_data["containers"][1]["image"] == "busybox:latest"
-
 
     def test_list_json_multiple_pods(self) -> None:
         """
@@ -147,7 +145,6 @@ class TestListJson:
         assert result[1]["containers"][0]["name"] == "app2"
         assert result[1]["containers"][0]["image"] == "app2:v2.0"
 
-
     def test_list_json_empty_pods_list(self) -> None:
         """
         Test the `list_json` function with an empty list of pods.
@@ -164,7 +161,6 @@ class TestListJson:
         result: list[dict] = list_json(mock_pods)
 
         assert result == []
-
 
     def test_list_json_pod_with_none_annotations_and_labels(self) -> None:
         """
@@ -204,7 +200,6 @@ class TestListJson:
         assert pod_data["labels"] is None
         assert len(pod_data["containers"]) == 1
 
-
     def test_list_json_pod_with_empty_containers(self) -> None:
         """
         Test the `list_json` function with a pod that has no containers.
@@ -234,7 +229,6 @@ class TestListJson:
         pod_data: dict = result[0]
         assert pod_data["name"] == "empty-pod"
         assert pod_data["containers"] == []
-
 
     def test_list_json_returns_ordered_dict_structure(self) -> None:
         """
@@ -272,7 +266,13 @@ class TestListJson:
 
         pod_data: dict = result[0]
         assert isinstance(pod_data, OrderedDict)
-        assert list(pod_data.keys()) == ["name", "namespace", "annotations", "labels", "containers"]
+        assert list(pod_data.keys()) == [
+            "name",
+            "namespace",
+            "annotations",
+            "labels",
+            "containers",
+        ]
 
         container_data: dict = pod_data["containers"][0]
         assert isinstance(container_data, OrderedDict)

@@ -3,13 +3,21 @@ from unittest.mock import patch, MagicMock
 
 from prometheus_client import CollectorRegistry
 
-from app.monitoring.registry import get_registry, init_storage, PROMETHEUS_MULTIPROC_DIR
+from app.monitoring.registry import (
+    get_registry,
+    init_storage,
+    PROMETHEUS_MULTIPROC_DIR,
+)
 
 
 class TestRegistry(unittest.TestCase):
-    @patch('app.monitoring.registry.MultiProcessCollector')
-    @patch('app.monitoring.registry.CollectorRegistry')
-    def test_get_registry(self, mock_collector_registry, mock_multiprocess_collector) -> None:
+    @patch("app.monitoring.registry.MultiProcessCollector")
+    @patch("app.monitoring.registry.CollectorRegistry")
+    def test_get_registry(
+        self,
+        mock_collector_registry: MagicMock,
+        mock_multiprocess_collector: MagicMock,
+    ) -> None:
         """
         Test that get_registry creates and returns a CollectorRegistry with MultiProcessCollector.
 
@@ -27,12 +35,17 @@ class TestRegistry(unittest.TestCase):
         mock_multiprocess_collector.assert_called_once_with(mock_registry)
         self.assertEqual(result, mock_registry)
 
-
-    @patch('app.monitoring.registry.os.makedirs')
-    @patch('app.monitoring.registry.os.path.isdir')
-    @patch('app.monitoring.registry.shutil.rmtree')
-    @patch('app.monitoring.registry.logging')
-    def test_init_storage_clean_true_directory_exists(self, mock_logging, mock_rmtree, mock_isdir, mock_makedirs) -> None:
+    @patch("app.monitoring.registry.os.makedirs")
+    @patch("app.monitoring.registry.os.path.isdir")
+    @patch("app.monitoring.registry.shutil.rmtree")
+    @patch("app.monitoring.registry.logging")
+    def test_init_storage_clean_true_directory_exists(
+        self,
+        mock_logging: MagicMock,
+        mock_rmtree: MagicMock,
+        mock_isdir: MagicMock,
+        mock_makedirs: MagicMock,
+    ) -> None:
         """
         Test init_storage with clean=True when directory exists.
 
@@ -46,16 +59,27 @@ class TestRegistry(unittest.TestCase):
         init_storage(clean=True)
 
         mock_isdir.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR)
-        mock_logging.debug.assert_called_once_with("Cleaning PROMETHEUS_MULTIPROC_DIR: %s", PROMETHEUS_MULTIPROC_DIR)
-        mock_rmtree.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR, ignore_errors=True)
-        mock_makedirs.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
+        mock_logging.debug.assert_called_once_with(
+            "Cleaning PROMETHEUS_MULTIPROC_DIR: %s", PROMETHEUS_MULTIPROC_DIR
+        )
+        mock_rmtree.assert_called_once_with(
+            PROMETHEUS_MULTIPROC_DIR, ignore_errors=True
+        )
+        mock_makedirs.assert_called_once_with(
+            PROMETHEUS_MULTIPROC_DIR, exist_ok=True
+        )
 
-
-    @patch('app.monitoring.registry.os.makedirs')
-    @patch('app.monitoring.registry.os.path.isdir')
-    @patch('app.monitoring.registry.shutil.rmtree')
-    @patch('app.monitoring.registry.logging')
-    def test_init_storage_clean_true_directory_not_exists(self, mock_logging, mock_rmtree, mock_isdir, mock_makedirs) -> None:
+    @patch("app.monitoring.registry.os.makedirs")
+    @patch("app.monitoring.registry.os.path.isdir")
+    @patch("app.monitoring.registry.shutil.rmtree")
+    @patch("app.monitoring.registry.logging")
+    def test_init_storage_clean_true_directory_not_exists(
+        self,
+        mock_logging: MagicMock,
+        mock_rmtree: MagicMock,
+        mock_isdir: MagicMock,
+        mock_makedirs: MagicMock,
+    ) -> None:
         """
         Test init_storage with clean=True when directory does not exist.
 
@@ -71,14 +95,21 @@ class TestRegistry(unittest.TestCase):
         mock_isdir.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR)
         mock_logging.debug.assert_not_called()
         mock_rmtree.assert_not_called()
-        mock_makedirs.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
+        mock_makedirs.assert_called_once_with(
+            PROMETHEUS_MULTIPROC_DIR, exist_ok=True
+        )
 
-
-    @patch('app.monitoring.registry.os.makedirs')
-    @patch('app.monitoring.registry.os.path.isdir')
-    @patch('app.monitoring.registry.shutil.rmtree')
-    @patch('app.monitoring.registry.logging')
-    def test_init_storage_clean_false(self, mock_logging, mock_rmtree, mock_isdir, mock_makedirs) -> None:
+    @patch("app.monitoring.registry.os.makedirs")
+    @patch("app.monitoring.registry.os.path.isdir")
+    @patch("app.monitoring.registry.shutil.rmtree")
+    @patch("app.monitoring.registry.logging")
+    def test_init_storage_clean_false(
+        self,
+        mock_logging: MagicMock,
+        mock_rmtree: MagicMock,
+        mock_isdir: MagicMock,
+        mock_makedirs: MagicMock,
+    ) -> None:
         """
         Test init_storage with clean=False.
 
@@ -92,14 +123,21 @@ class TestRegistry(unittest.TestCase):
         mock_isdir.assert_not_called()
         mock_logging.debug.assert_not_called()
         mock_rmtree.assert_not_called()
-        mock_makedirs.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
+        mock_makedirs.assert_called_once_with(
+            PROMETHEUS_MULTIPROC_DIR, exist_ok=True
+        )
 
-
-    @patch('app.monitoring.registry.os.makedirs')
-    @patch('app.monitoring.registry.os.path.isdir')
-    @patch('app.monitoring.registry.shutil.rmtree')
-    @patch('app.monitoring.registry.logging')
-    def test_init_storage_default_clean(self, mock_logging, mock_rmtree, mock_isdir, mock_makedirs) -> None:
+    @patch("app.monitoring.registry.os.makedirs")
+    @patch("app.monitoring.registry.os.path.isdir")
+    @patch("app.monitoring.registry.shutil.rmtree")
+    @patch("app.monitoring.registry.logging")
+    def test_init_storage_default_clean(
+        self,
+        mock_logging: MagicMock,
+        mock_rmtree: MagicMock,
+        mock_isdir: MagicMock,
+        mock_makedirs: MagicMock,
+    ) -> None:
         """
         Test init_storage with default clean parameter (False).
 
@@ -110,8 +148,10 @@ class TestRegistry(unittest.TestCase):
         mock_isdir.assert_not_called()
         mock_logging.debug.assert_not_called()
         mock_rmtree.assert_not_called()
-        mock_makedirs.assert_called_once_with(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
+        mock_makedirs.assert_called_once_with(
+            PROMETHEUS_MULTIPROC_DIR, exist_ok=True
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

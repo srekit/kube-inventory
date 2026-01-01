@@ -1,9 +1,9 @@
-FROM python:3.14-slim
+FROM ghcr.io/srekit/custom-images/base-python:pr-5-03c5622
 
-WORKDIR /app
+COPY dist/*.whl ./
 
-COPY dist/ ./dist/
+RUN pip install *.whl && rm -f *.whl
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ["python", "-m", "app"]
+ENTRYPOINT ["python", "-m", "app"]

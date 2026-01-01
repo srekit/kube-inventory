@@ -2,7 +2,12 @@ import unittest
 
 from unittest.mock import patch, MagicMock, call
 
-from app.monitoring.metrics import clear_metrics, register_metrics, update_metric, METRICS
+from app.monitoring.metrics import (
+    clear_metrics,
+    register_metrics,
+    update_metric,
+    METRICS,
+)
 
 
 class TestMetrics(unittest.TestCase):
@@ -15,7 +20,6 @@ class TestMetrics(unittest.TestCase):
         """
         METRICS.clear()
 
-
     def tearDown(self) -> None:
         """
         Clean up the test environment after each test method.
@@ -25,9 +29,8 @@ class TestMetrics(unittest.TestCase):
         """
         METRICS.clear()
 
-
-    @patch('app.monitoring.metrics.init_storage')
-    def test_clear_metrics(self, mock_init_storage) -> None:
+    @patch("app.monitoring.metrics.init_storage")
+    def test_clear_metrics(self, mock_init_storage: MagicMock) -> None:
         """
         Test the `clear_metrics` function.
 
@@ -40,10 +43,11 @@ class TestMetrics(unittest.TestCase):
         clear_metrics()
         mock_init_storage.assert_called_once_with(clean=True)
 
-
-    @patch('app.monitoring.metrics.logging')
-    @patch('app.monitoring.metrics.Gauge')
-    def test_register_metrics_first_time(self, mock_gauge, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    @patch("app.monitoring.metrics.Gauge")
+    def test_register_metrics_first_time(
+        self, mock_gauge: MagicMock, mock_logging: MagicMock
+    ) -> None:
         """
         Test the `register_metrics` function when metrics are registered for the first time.
 
@@ -59,20 +63,21 @@ class TestMetrics(unittest.TestCase):
         mock_gauge_instance: MagicMock = MagicMock()
         mock_gauge.return_value = mock_gauge_instance
 
-        with patch('app.monitoring.metrics._metrics_registered', False):
+        with patch("app.monitoring.metrics._metrics_registered", False):
             register_metrics()
 
-        self.assertEqual(mock_gauge.call_count, 2)
+        self.assertEqual(mock_gauge.call_count, 4)
 
-        self.assertEqual(len(METRICS), 2)
+        self.assertEqual(len(METRICS), 4)
         self.assertIn("kube_inventory_pods_total", METRICS)
         self.assertIn("kube_inventory_pod_versions_to_latest_release", METRICS)
 
         mock_logging.info.assert_called_once()
 
-
-    @patch('app.monitoring.metrics.logging')
-    def test_register_metrics_already_registered(self, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    def test_register_metrics_already_registered(
+        self, mock_logging: MagicMock
+    ) -> None:
         """
         Test the `register_metrics` function when metrics are already registered.
 
@@ -85,15 +90,16 @@ class TestMetrics(unittest.TestCase):
         Args:
             mock_logging (MagicMock): Mocked `logging` module to verify logging behavior.
         """
-        with patch('app.monitoring.metrics._metrics_registered', True):
+        with patch("app.monitoring.metrics._metrics_registered", True):
             register_metrics()
 
-        mock_logging.debug.assert_called_once_with("Metrics already registered, skipping registration")
+        mock_logging.debug.assert_called_once_with(
+            "Metrics already registered, skipping registration"
+        )
         self.assertEqual(len(METRICS), 0)  # No metrics should be added
 
-
-    @patch('app.monitoring.metrics.logging')
-    def test_update_metric_not_found(self, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    def test_update_metric_not_found(self, mock_logging: MagicMock) -> None:
         """
         Test the `update_metric` function when the specified metric is not found.
 
@@ -104,11 +110,14 @@ class TestMetrics(unittest.TestCase):
             mock_logging (MagicMock): Mocked `logging` module to verify logging behavior.
         """
         update_metric("nonexistent_metric", 42.0)
-        mock_logging.warning.assert_called_once_with("Metric 'nonexistent_metric' not found in registry")
+        mock_logging.warning.assert_called_once_with(
+            "Metric 'nonexistent_metric' not found in registry"
+        )
 
-
-    @patch('app.monitoring.metrics.logging')
-    def test_update_metric_without_labels(self, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    def test_update_metric_without_labels(
+        self, mock_logging: MagicMock
+    ) -> None:
         """
         Test the `update_metric` function when updating a metric without labels.
 
@@ -125,14 +134,17 @@ class TestMetrics(unittest.TestCase):
         update_metric("test_metric", 10.5)
 
         mock_metric.set.assert_called_once_with(10.5)
-        mock_logging.debug.assert_has_calls([
-            call("Attempting to update metric 'test_metric' with value 10.5"),
-            call("Gauge '%s' set to %s", "test_metric", 10.5)
-        ])
+        mock_logging.debug.assert_has_calls(
+            [
+                call(
+                    "Attempting to update metric 'test_metric' with value 10.5"
+                ),
+                call("Gauge '%s' set to %s", "test_metric", 10.5),
+            ]
+        )
 
-
-    @patch('app.monitoring.metrics.logging')
-    def test_update_metric_with_labels(self, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    def test_update_metric_with_labels(self, mock_logging: MagicMock) -> None:
         """
         Test the `update_metric` function when updating a metric with labels.
 
@@ -154,14 +166,24 @@ class TestMetrics(unittest.TestCase):
 
         mock_metric.labels.assert_called_once_with(**labels)
         mock_labels.set.assert_called_once_with(5.0)
-        mock_logging.debug.assert_has_calls([
-            call("Attempting to update metric 'test_metric' with value 5.0"),
-            call("Gauge '%s' set to %s with labels %s", "test_metric", 5.0, labels)
-        ])
+        mock_logging.debug.assert_has_calls(
+            [
+                call(
+                    "Attempting to update metric 'test_metric' with value 5.0"
+                ),
+                call(
+                    "Gauge '%s' set to %s with labels %s",
+                    "test_metric",
+                    5.0,
+                    labels,
+                ),
+            ]
+        )
 
-
-    @patch('app.monitoring.metrics.logging')
-    def test_update_metric_unsupported_type(self, mock_logging) -> None:
+    @patch("app.monitoring.metrics.logging")
+    def test_update_metric_unsupported_type(
+        self, mock_logging: MagicMock
+    ) -> None:
         """
         Test the `update_metric` function when the metric type is unsupported.
 
@@ -172,13 +194,17 @@ class TestMetrics(unittest.TestCase):
         Args:
             mock_logging (MagicMock): Mocked `logging` module to verify logging behavior.
         """
-        mock_metric: MagicMock = MagicMock(spec=[])  # Mock without 'set' attribute
+        mock_metric: MagicMock = MagicMock(
+            spec=[]
+        )  # Mock without 'set' attribute
         METRICS["invalid_metric"] = mock_metric
 
         update_metric("invalid_metric", 1.0)
 
-        mock_logging.error.assert_called_once_with("Metric '%s' is not a Gauge or unsupported type", "invalid_metric")
+        mock_logging.error.assert_called_once_with(
+            "Metric '%s' is not a Gauge or unsupported type", "invalid_metric"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

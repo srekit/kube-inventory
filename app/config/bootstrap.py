@@ -1,14 +1,6 @@
 import argparse
-import logging
-import sys
 
-from app.common import file_check
-
-from app.config import (
-    args,
-    os_envs,
-    log_settings
-)
+from app.config import args, os_envs, log_settings
 
 
 def load_config() -> argparse.Namespace:
@@ -30,27 +22,9 @@ def load_config() -> argparse.Namespace:
     app_envs: dict = os_envs.load_envs()
     args_values: argparse.Namespace = args.load_args(
         env_github_access_token=app_envs["GITHUB"]["access_token"],
-        env_log_level=app_envs["LOG"]["log_level"]
+        env_log_level=app_envs["LOG"]["log_level"],
     )
 
     log_settings.setup_logging(log_level_str=args_values.log_level)
 
     return args_values
-
-
-def prereqs_check(default_apps_file_path: str) -> None:
-    """
-    Check prerequisites for the application.
-
-    This function verifies the existence of the default applications file at the specified path.
-    If the file does not exist, it logs an error message and terminates the program.
-
-    Args:
-        default_apps_file_path (str): The file path to the default applications file.
-
-    Returns:
-        None
-    """
-    if not file_check.file_exists(file_path=default_apps_file_path):
-        logging.error(f"Finished with error: Default apps file not found at {default_apps_file_path}")
-        sys.exit(1)

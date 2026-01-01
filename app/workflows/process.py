@@ -2,16 +2,16 @@ import logging
 import sys
 from typing import Optional, List
 
+from app.clients.kube import KubernetesClient
 from app.common import file_operations
 from app.workflows import outputs, pods_inventory
 
 
 def generate(
-        default_apps_file_path: str,
-        extra_apps_file_path: str,
-        github_access_token: Optional[str],
-        github_api_url: str,
-        kube_config_path: Optional[str] = None,
+    extra_apps_file_path: str,
+    github_access_token: Optional[str],
+    github_api_url: str,
+    kube_client: KubernetesClient,
 ) -> List[pods_inventory.PodsInventoried]:
     """
     Generates a list of `PodsInventoried` objects based on the provided application files
@@ -22,32 +22,31 @@ def generate(
     configuration, to produce an inventory of pods.
 
     Args:
-        default_apps_file_path (str): Path to the default applications file.
         extra_apps_file_path (str): Path to the extra applications file.
         github_access_token (Optional[str]): GitHub access token for authentication (if required).
         github_api_url (str): URL of the GitHub API.
-        kube_config_path (Optional[str], optional): Path to the Kubernetes configuration file.
-            Defaults to None.
+        kube_client (KubernetesClient): Kubernetes client.
 
     Returns:
         List[pods_inventory.PodsInventoried]: A list of `PodsInventoried` objects representing
         the generated pod inventory.
     """
-    pods_inventoried: List[pods_inventory.PodsInventoried] = pods_inventory.generate(
-        default_apps_file_path=default_apps_file_path,
+    pods_inventoried: List[
+        pods_inventory.PodsInventoried
+    ] = pods_inventory.generate(
         extra_apps_file_path=extra_apps_file_path,
         github_access_token=github_access_token,
         github_api_url=github_api_url,
-        kube_config_path=kube_config_path
+        kube_client=kube_client,
     )
     return pods_inventoried
 
 
 def output(
-        pods: List[pods_inventory.PodsInventoried],
-        output_dir: str,
-        output_mode: str
-):
+    pods: List[pods_inventory.PodsInventoried],
+    output_dir: str,
+    output_mode: str,
+) -> None:
     """
     Outputs the inventory of pods to a file in the specified format.
 
@@ -70,10 +69,14 @@ def output(
     match output_mode:
         case "csv":
             csv_output: str = outputs.csv(pods)
-            file_operations.content_to_file(file_path=f"{output_dir}/inventory.csv", content=csv_output)
+            file_operations.content_to_file(
+                file_path=f"{output_dir}/inventory.csv", content=csv_output
+            )
         case "json":
             json_output: list[dict] = outputs.json(pods)
-            file_operations.content_to_file(file_path=f"{output_dir}/inventory.json", content=json_output)
+            file_operations.content_to_file(
+                file_path=f"{output_dir}/inventory.json", content=json_output
+            )
         case _:
             logging.error(f"Unsupported output mode: {output_mode}")
             sys.exit(1)

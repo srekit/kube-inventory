@@ -6,11 +6,8 @@ from pathlib import Path
 from typing import Union
 
 
-def content_to_file(
-        file_path: str,
-        content: Union[str, list, dict]
-) -> None:
-    """ Write content to a file, creating parent directories if needed.
+def content_to_file(file_path: str, content: Union[str, list, dict]) -> None:
+    """Write content to a file, creating parent directories if needed.
     Args:
         file_path: Path to the file where content will be written
         content: Content to write - can be string, list, or dict
