@@ -16,5 +16,3 @@ jobs:
   python-release:
     name: Release Python Application
     uses: srekit/github-workflows/.github/workflows/release-python.yaml@feature/release-python
-    with:
-      image-tag: ${{ github.event.release.tag_name }}
