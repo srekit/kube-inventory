@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "kube-inventory"
-version = "0.1.0"
+version = "1.0.0"
 description = "Inventory of softwares running in a Kubernetes cluster"
 authors = ["Emerson Candido <emerson.candido@live.com>"]
 readme = "README.md"
+license = "MIT"
 packages = [{include = "app"}]
 include = ["app/config/data/*.yaml"]
 
