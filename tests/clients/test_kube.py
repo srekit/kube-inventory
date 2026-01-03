@@ -32,7 +32,8 @@ class TestKubernetesClient(unittest.TestCase):
         mock_core_v1_api.return_value = mock_api_instance
 
         client: KubernetesClient = KubernetesClient(
-            kube_config_path=kube_config_path
+            kube_config_path=kube_config_path,
+            kube_in_cluster=False,
         )
 
         mock_load_kube_config.assert_called_once_with(kube_config_path)
@@ -65,7 +66,10 @@ class TestKubernetesClient(unittest.TestCase):
         mock_api_instance: MagicMock = MagicMock()
         mock_core_v1_api.return_value = mock_api_instance
 
-        client: KubernetesClient = KubernetesClient()
+        client: KubernetesClient = KubernetesClient(
+            kube_config_path="",
+            kube_in_cluster=True,
+        )
 
         mock_load_incluster_config.assert_called_once()
         mock_debug.assert_called_once_with(
@@ -98,7 +102,10 @@ class TestKubernetesClient(unittest.TestCase):
         mock_api_instance: MagicMock = MagicMock()
         mock_core_v1_api.return_value = mock_api_instance
 
-        client: KubernetesClient = KubernetesClient(kube_config_path=None)
+        client: KubernetesClient = KubernetesClient(
+            kube_config_path="",
+            kube_in_cluster=True,
+        )
 
         mock_load_incluster_config.assert_called_once()
         mock_debug.assert_called_once_with(
@@ -130,7 +137,10 @@ class TestKubernetesClient(unittest.TestCase):
             mock_pod_list
         )
 
-        client: KubernetesClient = KubernetesClient()
+        client: KubernetesClient = KubernetesClient(
+            kube_config_path="",
+            kube_in_cluster=True,
+        )
 
         with patch("app.clients.kube.logging.debug") as mock_debug:
             result: V1PodList = client.list_pods()
@@ -167,7 +177,8 @@ class TestKubernetesClient(unittest.TestCase):
         )
 
         client: KubernetesClient = KubernetesClient(
-            kube_config_path=kube_config_path
+            kube_config_path=kube_config_path,
+            kube_in_cluster=False,
         )
         result: V1PodList = client.list_pods()
 
