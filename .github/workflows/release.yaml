@@ -3,7 +3,6 @@ name: Release Python
 on:
   release:
     types:
-      - prereleased
       - released
 
 permissions:
@@ -13,6 +12,23 @@ permissions:
   pull-requests: write
 
 jobs:
-  python-release:
-    name: Release Python Application
-    uses: srekit/github-workflows/.github/workflows/release-python.yaml@feature/release-python
+  call-build:
+    uses: srekit/github-workflows/.github/workflows/build-poetry.yaml@feature/release-python
+    secrets: inherit
+
+  pypi-publish:
+    name: upload release to PyPI
+    needs: call-build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
