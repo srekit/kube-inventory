@@ -84,6 +84,7 @@ You could also have the possibility to visualize the metrics using Grafana dashb
 | --output-dir                        | Path to output directory            | Directory to save output files             | Current directory        |
 | --output-mode                       | json, csv, prometheus               | Output format for the inventory data       | `json`                   |
 | --output-refresh-interval-seconds   | Integer (seconds)                   | Refresh interval for Prometheus mode       | `300`                    |
+| --version                           |                                     | Show application version and exit          |                          |
 | --web-host                          | Hostname or IP                      | Host for the web server in Prometheus mode | `0.0.0.0`                |
 | --web-port                          | Integer (port number)               | Port for the web server in Prometheus mode | `8080`                   |
 

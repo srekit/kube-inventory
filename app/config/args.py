@@ -1,6 +1,8 @@
 import argparse
 from argparse import ArgumentParser
 
+from app.common.versions import get_version
+
 
 def load_args(
     env_github_access_token: str, env_log_level: str
@@ -79,6 +81,13 @@ def general_parsers_common(env_log_level: str) -> ArgumentParser:
         required=False if env_log_level else True,
         choices="DEBUG INFO WARNING ERROR CRITICAL".split(),
         help="Logging level (environment variable: LOG_LEVEL, default: INFO)",
+    )
+
+    common_general_parsers.add_argument(
+        "--version",
+        action="version",
+        version=f"kube-inventory {get_version()}",
+        help="Show application version",
     )
 
     return common_general_parsers
