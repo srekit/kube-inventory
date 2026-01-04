@@ -136,7 +136,7 @@ def general_parsers_github(env_github_access_token: str) -> ArgumentParser:
         "--github-access-token",
         type=str,
         default=env_github_access_token,
-        required=False if env_github_access_token else True,
+        required=False,
         help="GitHub access token (environment variable: GITHUB_ACCESS_TOKEN)",
     )
 
@@ -170,9 +170,17 @@ def general_parsers_kubernetes() -> ArgumentParser:
     kubernetes_general_parsers.add_argument(
         "--kube-config-path",
         type=str,
-        default=None,
+        default="~/.kube/config",
         required=False,
-        help="Path to the Kubernetes configuration file (default: None, uses in-cluster config)",
+        help="Path to the Kubernetes configuration file (default: ~/.kube/config)",
+    )
+
+    kubernetes_general_parsers.add_argument(
+        "--kube-in-cluster",
+        type=str,
+        default=False,
+        required=False,
+        help="Use in-cluster Kubernetes configuration (default: False)",
     )
 
     return kubernetes_general_parsers

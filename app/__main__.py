@@ -29,6 +29,7 @@ def main() -> None:
 
     kube_client: KubernetesClient = KubernetesClient(
         kube_config_path=args_values.kube_config_path,
+        kube_in_cluster=args_values.kube_in_cluster,
     )
 
     match args_values.output_mode:

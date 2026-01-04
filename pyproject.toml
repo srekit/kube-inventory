@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "kube-inventory"
-version = "0.1.0"
+version = "0.0.2"
 description = "Inventory of softwares running in a Kubernetes cluster"
 authors = ["Emerson Candido <emerson.candido@live.com>"]
 readme = "README.md"
+license = "MIT"
 packages = [{include = "app"}]
 include = ["app/config/data/*.yaml"]
 
@@ -12,7 +13,6 @@ python = "^3.13"
 python-dotenv = "1.1.1"
 kubernetes = "34.1.0"
 requests = "2.32.4"
-file = "^0.3.0"
 poetry-core = "^2.2.1"
 prometheus-client = "0.23.1"
 gunicorn = "23.0.0"
@@ -54,4 +54,4 @@ namespace_packages = true
 explicit_package_bases = true
 
 [tool.poetry.scripts]
-kube-inventory = "app.main:main"
+kube-inventory = "app.__main__:main"

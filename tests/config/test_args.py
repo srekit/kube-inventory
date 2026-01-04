@@ -81,28 +81,6 @@ class TestArgsParsers(unittest.TestCase):
         self.assertEqual(args.github_access_token, "token123")
         self.assertEqual(args.github_api_url, "https://api.github.com")
 
-    def test_general_parsers_github_without_token(self) -> None:
-        """
-        Test the `general_parsers_github` function without a provided GitHub access token.
-
-        This test verifies that the `general_parsers_github` function raises a `SystemExit`
-        exception when no GitHub access token is provided.
-
-        The test ensures that:
-        - The parser exits with an error when the `env_github_access_token` is an empty string.
-
-        Args:
-            self: The instance of the test case.
-
-        Returns:
-            None
-        """
-        parser: ArgumentParser = general_parsers_github(
-            env_github_access_token=""
-        )
-        with self.assertRaises(SystemExit):
-            parser.parse_args([])
-
     def test_general_parsers_kubernetes(self) -> None:
         """
         Test the `general_parsers_kubernetes` function.
@@ -111,7 +89,7 @@ class TestArgsParsers(unittest.TestCase):
         the `--kube-config-path` argument.
 
         The test ensures that:
-        - The `kube_config_path` argument is `None` when no command-line arguments are provided.
+        - The `kube_config_path` argument is `~/.kube/config` when no command-line arguments are provided.
 
         Args:
             self: The instance of the test case.
@@ -121,7 +99,7 @@ class TestArgsParsers(unittest.TestCase):
         """
         parser: ArgumentParser = general_parsers_kubernetes()
         args: Namespace = parser.parse_args([])
-        self.assertIsNone(args.kube_config_path)
+        self.assertEqual(args.kube_config_path, "~/.kube/config")
 
     def test_general_parsers_output(self) -> None:
         """
