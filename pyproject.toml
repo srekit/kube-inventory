@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kube-inventory"
-version = "1.0.0"
+version = "1.0.1"
 description = "Inventory of softwares running in a Kubernetes cluster"
 authors = ["Emerson Candido <emerson.candido@live.com>"]
 readme = "README.md"
