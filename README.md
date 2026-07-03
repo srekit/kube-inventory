@@ -1,5 +1,5 @@
 # Kube Inventory
-
+V2
 A tool to inventory and track software versions running in Kubernetes clusters, helping identify outdated applications that may need upgrades.
 
 
