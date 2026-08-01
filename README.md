@@ -97,3 +97,5 @@ The following environment variables can be used as alternatives to command-line 
 |---------------------------------------|----------------------------------------------|
 | `GITHUB_ACCESS_TOKEN`                 | GitHub access token for API requests         |
 | `LOG_LEVEL`                           | Logging level for the application            |
+
+test workflow
